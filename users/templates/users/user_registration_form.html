@@ -1,0 +1,33 @@
+{% extends "helpdesk/base.html" %}
+{% block main_content %}
+<div class="container w-50 p-4 border border-1 rounded-3 shadow-sm bg-light">
+    <h1>Registrar</h1>
+    <p class="text-secondary">Por favor, preencha o formulário abaixo para abrir um novo Ticket.</p>
+    <form method="post" action="{% url 'user_registration' %}">
+        {% csrf_token %}
+        <div class="mb-3">
+          <label for="InputEmail" class="form-label">Email address:</label>
+          <!-- <input type="email" class="form-control" id="InputEmail" placeholder="example@company.com" aria-describedby="emailHelp"> -->
+           {{form.email}}
+          <div id="emailHelp" class="form-text">Nunca compartilharemos seu e-mail com mais ninguém..</div>
+        </div>
+        <div class="mb-3">
+            <label for="exampleInputPassword1" class="form-label">Username:</label>
+            <!-- <input class="form-control" type="text" aria-label=".form-control-lg example"> -->
+            {{form.username}}
+            <div class="form-text">Este nome será usado em início de sessão</div>
+        </div>
+        <hr>
+        <div class="mb-3">
+            <label for="exampleInputPassword1" class="form-label">Password</label><br>
+            {{form.password1}}
+        </div>
+        <div class="mb-3">
+            <label for="exampleInputPassword2" class="form-label">Password2</label><br>
+            {{form.password2}}
+        </div>
+        <br>
+        <button type="submit" class="btn btn-primary w-100">Submit</button>
+    </form>
+</div>
+{% endblock %}
