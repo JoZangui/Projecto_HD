@@ -1,3 +1,4 @@
+""" users/models.py """
 from django import forms
 from django.contrib.auth.models import User 
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
@@ -15,6 +16,4 @@ class UserRegistrationForm(UserCreationForm):
         widgets = {
             'username': forms.TextInput(attrs={'class': 'form-control', 'placeholder': _('John.doe')}),
             'email': forms.EmailInput(attrs={'class': 'form-control', 'type': "email", 'id':"InputEmail", 'placeholder': "example@company.com", 'aria-describedby': "emailHelp"}),
-            'password1': forms.PasswordInput(attrs={'class': 'form-control', 'type': "password", 'id': "inputEmail1", 'placeholder': _('Password')}),
-            'password2': forms.PasswordInput(attrs={'class': 'form-control', 'type': "password", 'id': "inputEmail2", 'placeholder': _('Confirm Password')}),
         }

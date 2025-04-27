@@ -1,30 +1,12 @@
 {% extends "helpdesk/base.html" %}
 {% block main_content %}
-<div class="container w-50 p-4 border border-1 rounded-3 shadow-sm bg-light">
+<div class="container p-4 border border-1 rounded-3 shadow-sm bg-light">
     <h1>Criar Novo Ticket</h1>
     <p class="text-secondary">Por favor, preencha o formulário abaixo para abrir um novo Ticket.</p>
     <form>
-        <div class="mb-3">
-          <!-- <label for="InputEmail" class="form-label">Email address:</label> -->
-          <label for="InputEmail" class="form-label">Usuário:</label>
-          <!-- <input type="email" class="form-control" id="InputEmail" placeholder="example@company.com" aria-describedby="emailHelp"> -->
-           {{form.user}}
-          <div id="emailHelp" class="form-text">Nunca compartilharemos seu e-mail com mais ninguém..</div>
-        </div>
-        <!-- <div class="mb-3">
-            <label for="exampleInputPassword1" class="form-label">Username:</label>
-            <input class="form-control" type="text" aria-label=".form-control-lg example">
-            <div class="form-text">Este nome será usado em início de sessão</div>
-        </div> -->
-        <hr>
+        {% csrf_token %}
         <div class="mb-3">
             <label for="exampleInputPassword1" class="form-label">Help Topic:</label><br>
-            <!-- <select class="form-select" aria-label="Default select example">
-                <option selected>Open this select menu</option>
-                <option value="1">One</option>
-                <option value="2">Two</option>
-                <option value="3">Three</option>
-            </select> -->
             {{form.help_topic}}
         </div>
         <hr>
@@ -34,17 +16,15 @@
             <label for="" class="text-secondary">Please Describe Your Issue</label>
             <br>
             <br>
-            <label for="">Issue Summary:</label>
-            <!-- <input class="form-control" type="text" aria-label=".form-control-lg example"> -->
+            <label for="">Resumo do problema:</label>
             {{form.issue_summary}}
         </div>
         <div class="form-floating">
-            <!-- <textarea class="form-control" placeholder="Leave a comment here" id="floatingTextarea2" style="height: 200px; resize: none;"></textarea> -->
             {{form.description}}
-            <label for="floatingTextarea2">Comments</label>
+            <label class="text-secondary" for="floatingTextarea2">Descrever</label>
         </div>
         <br>
-        <button type="submit" class="btn btn-primary w-100">Submit</button>
+        <button type="submit" class="btn btn-primary ">Submeter Ticket</button>
     </form>
 </div>
 {% endblock %}

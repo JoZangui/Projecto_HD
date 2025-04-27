@@ -9,14 +9,12 @@ class TicketForm(ModelForm):
     """
     class Meta:
         model = Ticket
-        fields = ['user', 'help_topic', 'issue_summary', 'description', 'due_date']
+        fields = ['help_topic', 'issue_summary', 'description', 'due_date']
         widgets = {
-            # user
-            'user': forms.Select(attrs={'class': 'form-select', 'aria-label': 'Default select example'}),
             # help_topic
             'help_topic': forms.Select(attrs={'class': 'form-select', 'aria-label': 'Default select example'}),
             # issue_summary
-            'issue_summary': forms.TextInput(attrs={'class': 'form-control', 'type': 'text', 'aria-label': 'form-control-lg example', 'placeholder': 'Summarize the issue'}),
+            'issue_summary': forms.TextInput(attrs={'class': 'form-control', 'type': 'text', 'aria-label': 'form-control-lg example', 'placeholder': 'Assunto'}),
             # description
             'description': forms.Textarea(attrs={'class': 'form-control', 'placeholder': "Leave a comment here", 'id': "floatingTextarea2", 'style': "height: 200px; resize: none;"}),
             # due_date
@@ -40,8 +38,7 @@ class HelpTopicForm(ModelForm):
     """
     class Meta:
         model = HelpTopic
-        fields = ['name', 'description']
+        fields = ['name']
         widgets = {
-            'name': forms.TextInput(attrs={'class': 'form-control'}),
-            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 4, 'cols': 40}),
+            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter the name of the help topic'}),
         }

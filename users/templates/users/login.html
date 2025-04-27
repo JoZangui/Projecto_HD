@@ -1,0 +1,26 @@
+{% extends "helpdesk/base.html" %}
+{% block main_content %}
+<div class="container w-50 p-4 border border-1 rounded-3 shadow-sm bg-light">
+    <h1>Login</h1>
+    <p class="text-secondary">Por favor, preencha o formulário abaixo para abrir um novo Ticket.</p>
+    <form method="post" action="{% url 'login' %}">
+        {% csrf_token %}
+        <div class="mb-3">
+            <!-- label -->
+          <label for="InputUsername" class="form-label">Username:</label>
+          <!-- input -->
+          <input type="text" class="form-control" name="username" id="InputUsername" placeholder="example@company.com">
+          <!-- div info -->
+          <div id="emailHelp" class="form-text">Nunca compartilharemos seu e-mail com mais ninguém..</div>
+        </div>
+        <div class="mb-3">
+            <!-- label -->
+            <label for="inputPassword" class="form-label">Password: </label><br>
+            <!-- input -->
+            <input type="password" class="form-control" name="password" id="inputPassword">
+        </div>
+        <br>
+        <button type="submit" class="btn btn-primary w-100">Submit</button>
+    </form>
+</div>
+{% endblock %}

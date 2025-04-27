@@ -1,6 +1,6 @@
 {% extends "Helpdesk/base.html" %}
 {% block main_content %}
-    <div class="container w-50 p-4 border border-1 rounded-3 shadow-sm bg-light">
+    <div class="container p-4 border border-1 rounded-3 shadow-sm bg-light">
         <h1>Bem-vindo a Central de Suporte</h1>
         <div class="container-fluid bg-white p-3 rounded-3 shadow-sm mb-4">
             <p>
@@ -10,7 +10,7 @@
             </p>
         </div>
 
-        <div class="container px-0 d-flex">
+        <div class="container px-0 d-flex justify-content-between">
             <div class="card text-white bg-primary" style="width: 18rem;">
                 <div class="card-body">
                     <h5 class="card-title">Abrir Um Novo Ticket</h5>
@@ -26,6 +26,13 @@
                     <h5 class="card-title">Verificar Status do Ticket</h5>
                     <p class="card-text" style="height: 95px;">Fornecemos arquivos e histórico de todas as suas solicitações de suporte Para melhor acompanhamento das respostas.</p>
                     <a href="{% url 'check_ticket_status' %}" class="btn btn-secondary border border-white">Verificar Status do Ticket</a>
+                </div>
+            </div>
+            <div class="card text-white ms-3 bg-warning" style="width: 18rem;">
+                <div class="card-body">
+                    <h5 class="card-title">Reportar problemas</h5>
+                    <p class="card-text" style="height: 95px;">Se tiver a ter problemas com o uso da central de suporte envianos um emai com a sua situação clicando no botão a baixo.</p>
+                    <a href="{% url 'check_ticket_status' %}" class="btn btn-warning text-white border border-white">Verificar Status do Ticket</a>
                 </div>
             </div>
         </div>

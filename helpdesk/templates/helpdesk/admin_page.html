@@ -1,0 +1,60 @@
+{% extends "helpdesk/base.html" %}
+{% block main_content %}
+    <div class="container-fluid p-4 border border-1 rounded-3 shadow-sm bg-light">
+        <h1 class="mt-4">Admin Page</h1>
+        <p class="text-secondary">Welcome to the admin page. Here you can manage users and tickets.</p>
+        <div class="container-fluid d-flex justify-content-center bg-white p-3 rounded-3 shadow-sm mb-4" style="height: 450px;">
+            <p class="align-self-center text-center text-secondary">
+                Sem informações no momento
+            </p>
+        </div>
+        <!-- Actividades recentes -->
+        <!-- Adicionar aqui as actividades obtidas por meio dos logs -->
+        <h2>Actividades Recentes</h2>
+        <p class="text-secondary">Todas as actividades realizadas recentemente</p>
+        <!-- <ul class="list-group">
+            {% for activity in activities %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    {{ activity.description }}
+                    <span class="badge bg-primary rounded-pill">{{ activity.timestamp }}</span>
+                </li>
+            {% empty%}
+                <p>Sem Actividades disponíveis no momento</p>
+            {% endfor %}
+        </ul> -->
+        <table class="table table-striped table-hover mt-3">
+            <caption>Lista de Actividades</caption>
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Título</th>
+                    <th scope="col">Descrição</th>
+                    <th scope="col">Data</th>
+                    <th scope="col">Ver Detalhes</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th scope="row">1</th>
+                    <td>Mark</td>
+                    <td>Otto</td>
+                    <td>@mdo</td>
+                    <td><a href="" class="btn btn-sm btn-primary">Detalhes</a></td>
+                </tr>
+                <tr>
+                    <th scope="row">2</th>
+                    <td>Jacob</td>
+                    <td>Thornton</td>
+                    <td>@fat</td>
+                    <td><a href="" class="btn btn-sm btn-primary">Detalhes</a></td>
+                </tr>
+                <tr>
+                    <th scope="row">3</th>
+                    <td colspan="2">Larry the Bird</td>
+                    <td>@twitter</td>
+                    <td><a href="" class="btn btn-sm btn-primary">Detalhes</a></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+{% endblock main_content %}

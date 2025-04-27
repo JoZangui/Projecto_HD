@@ -8,8 +8,6 @@ class HelpTopic(models.Model):
     Model representing a help topic for categorizing tickets.
     """
     name = models.CharField(max_length=100)
-    description = models.TextField()
-
     def __str__(self):
         return self.name
     
@@ -29,15 +27,19 @@ class Ticket(models.Model):
         ('medium', 'Medium'),
         ('high', 'High'),
         ('urgent', 'Urgent')
-    ], default='medium') # essa prioridade do ticket vai ser preenchida com signals
+    ], default='medium') # essa prioridade do ticket vai ser preenchida de forma com signals
     assigned_to = models.ForeignKey(User, null=True, blank=True, related_name='assigned_tickets', on_delete=models.SET_NULL)  # User assigned to resolve the ticket
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(default=timezone.now)
     due_date = models.DateTimeField(null=True, blank=True)  # Optional due date for resolution
-    status = models.CharField(max_length=20, default='open')  # e.g., open, in_progress, closed
+    status = models.CharField(max_length=20, choices=[
+        ('open', 'Open'),
+        ('in_progress', 'In Progress'),
+        ('closed', 'Closed')
+    ], default='open')  # e.g., open, in_progress, closed
 
     def __str__(self):
-        return self.title
+        return f'Ticket: {self.issue_summary}; Criado por: {self.user.username}'
 
     class Meta:
         verbose_name_plural = "Tickets" # Plural name for the model in admin interface
@@ -53,7 +55,7 @@ class TicketComment(models.Model):
 
     def __str__(self):
         return f"Comment by {self.user.username} on {self.ticket.issue_summary}"
-    
+
     class Meta:
         verbose_name_plural = "Comentarios de Tickets"
 

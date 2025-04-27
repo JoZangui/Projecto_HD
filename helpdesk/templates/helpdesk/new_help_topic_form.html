@@ -1,0 +1,16 @@
+{% extends "helpdesk/base.html" %}
+{% block main_content %}
+<div class="container w-50 p-4 border border-1 rounded-3 shadow-sm bg-light">
+    <h1>Adicionar Novo Tópico de Ajuda</h1>
+    <p class="text-secondary">Por favor, preencha o formulário abaixo para abrir um novo Ticket.</p>
+    <form method="post" action="{% url 'create_help_topic' %}">
+        {% csrf_token %}
+        <div class="mb-3">
+          <label for="Topico" class="form-label">Título do Tópico:</label>
+           {{form.name}}
+        </div>
+        <br>
+        <button type="submit" class="btn btn-primary w-100">Submit</button>
+    </form>
+</div>
+{% endblock %}
