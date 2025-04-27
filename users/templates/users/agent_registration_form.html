@@ -1,0 +1,22 @@
+{% extends "helpdesk/base.html" %}
+{% block main_content %}
+<div class="container p-4 border border-1 rounded-3 shadow-sm bg-light">
+    <h1>Registrar</h1>
+    <p class="text-secondary">Por favor, preencha o formulário abaixo para abrir um novo Ticket.</p>
+    <form method="post" action="{% url 'user_registration' %}">
+        {% csrf_token %}
+        <div class="mb-3">
+          <label for="InputEmail" class="form-label">Email address:</label>
+           {{form.user}}
+           <br>
+           <small><a href="{% url 'user_registration' %}" class="btn btn-sm btn-outline-primary">Adicionar um Novo Usuário</a></small>
+        </div>
+        <div class="mb-3">
+            <label for="exampleInputPassword1" class="form-label">Definir Privilégios de Usuário:</label>
+            {{form.privilege_level}}
+        </div>
+        <br>
+        <button type="submit" class="btn btn-primary w-100">Submit</button>
+    </form>
+</div>
+{% endblock %}

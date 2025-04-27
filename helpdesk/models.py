@@ -33,9 +33,9 @@ class Ticket(models.Model):
     updated_at = models.DateTimeField(default=timezone.now)
     due_date = models.DateTimeField(null=True, blank=True)  # Optional due date for resolution
     status = models.CharField(max_length=20, choices=[
-        ('open', 'Open'),
-        ('in_progress', 'In Progress'),
-        ('closed', 'Closed')
+        ('aberto', 'Aberto'),
+        ('em_progresso', 'Em Progresso'),
+        ('fechado', 'Fechado')
     ], default='open')  # e.g., open, in_progress, closed
 
     def __str__(self):

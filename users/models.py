@@ -11,8 +11,8 @@ class Agents(models.Model):
     # Add any additional fields you need for the agent here
     privilege_level = models.CharField(max_length=20, choices=[
         ('admin', 'Admin'),
-        ('agent', 'Agent'),
-        ('user', 'User')
+        ('agente', 'Agente'),
+        ('suporte', 'Suporte'),
     ], default='user', help_text=_("Select the privilege level for the agent."))  # Example field for privilege level
 
     def __str__(self):

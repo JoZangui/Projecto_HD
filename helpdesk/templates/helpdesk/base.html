@@ -53,7 +53,7 @@
         <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <input class="form-control form-control-dark w-100" type="text" placeholder="Search" aria-label="Search" style="placeholder: #fff;">
+        <input class="form-control form-control-dark w-100" type="text" placeholder="Search" aria-label="Search">
         <div class="navbar-nav">
             <div class="nav-item text-nowrap btn-group" role="group">
                 {% if user.is_authenticated %}
@@ -84,7 +84,7 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">
+                            <a class="nav-link" href="{% url 'ticket_list' %}">
                                 <i class="bi bi-ticket-perforated"></i>
                                 Tickets
                             </a>
@@ -96,7 +96,7 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">
+                            <a class="nav-link" href="{% url 'agent_registration' %}">
                                 <i class="bi bi-person"></i>
                                 Agentes
                             </a>
@@ -126,7 +126,7 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'check_ticket_status' %}">
+                            <a class="nav-link" href="{% url 'check_ticket' %}">
                                 <i class="bi bi-ticket-detailed"></i>
                                 Verificar Status do Ticket
                             </a>
@@ -170,47 +170,11 @@
             </div>
             </nav>
         </div>
-        <!-- sidebar -->
-        
-        <!-- <nav class="navbar navbar-expand-lg navbar-light fixed-top shadow-sm bg-light">
-            <div class="container">
-                <a class="navbar-brand fw-bold" href="{% url 'index' %}">HD Project</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarScroll" aria-controls="navbarScroll" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarScroll">
-                    <ul class="navbar-nav me-auto my-2 my-lg-0 navbar-nav-scroll" style="--bs-scroll-height: 100px;">
-                    <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="{% url 'index' %}">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'create_new_ticket' %}">Criar novo ticket</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'check_ticket_status' %}">Verificar status do Ticket</a>
-                    </li>
-                    </ul>
-                    {% if user.is_authenticated %}
-                        <div class="d-flex justify-content-between" style="width: 170px;" role="group" aria-label="Basic outlined example">
-                            <a href="{% url 'admin_page' %}" class="btn">{{user.username}}</a>
-                            <form action="{% url 'logout' %}" method="post">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-outline-danger">Logout</button>
-                            </form>
-                        </div>
-                    {% else %}  
-                        <div class="btn-group" role="group" aria-label="Basic outlined example">
-                            <a href="{% url 'user_registration' %}" class="btn btn-outline-info">Registro</a>
-                            <a href="{% url 'login' %}" class="btn btn-primary">Login</a>
-                        </div>
-                    {% endif %}
-                </div>
-            </div>
-        </nav> -->
         <main class="col-md-9 ms-sm-auto col-lg-10 py-4 p-md-4">
             {% block main_content %}{% endblock %}
         </main>
     </div>
+    {% block scripts %}{% endblock %}
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
 </html>

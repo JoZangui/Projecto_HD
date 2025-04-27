@@ -3,7 +3,7 @@
 <div class="container p-4 border border-1 rounded-3 shadow-sm bg-light">
     <h1>Criar Novo Ticket</h1>
     <p class="text-secondary">Por favor, preencha o formulário abaixo para abrir um novo Ticket.</p>
-    <form>
+    <form method="post">
         {% csrf_token %}
         <div class="mb-3">
             <label for="exampleInputPassword1" class="form-label">Help Topic:</label><br>

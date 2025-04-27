@@ -7,13 +7,18 @@ urlpatterns = [
     path('', views.index, name='index'),
     # admin page do helpdesk
     path('admin_page/', views.admin_page, name='admin_page'),
+    # lista de tickets
+    path('ticket_list/', views.ticket_list, name='ticket_list'),
     # para criar um novo ticket
     path('ticket/new/', views.create_new_ticket, name='create_new_ticket'),
+    # detalhes do ticket
+    path('ticket/<int:ticket_id>/', views.ticket_detail, name='ticket_detail'),
     # para verificar o estado do ticket
-    path('ticket/status/', views.check_ticket_status, name='check_ticket_status'),
+    path('ticket/status/', views.check_ticket, name='check_ticket'),
+    # mudar o estado do ticket
+    path('ticket/new_status/', views.change_ticket_status, name='change_ticket_status'),
     # criar um novo topico de ajuda
     path('help_topic/new/', views.create_help_topic, name='create_help_topic'),
-    # path('ticket/<int:ticket_id>/', views.ticket_detail, name='ticket_detail'),
     # path('ticket/<int:ticket_id>/edit/', views.edit_ticket, name='edit_ticket'),
     # path('ticket/<int:ticket_id>/delete/', views.delete_ticket, name='delete_ticket'),
 ]

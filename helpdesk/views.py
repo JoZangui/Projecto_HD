@@ -1,9 +1,11 @@
 """ helpdesk/views.py """
-import logging
+import logging, json
 
-from django.shortcuts import render, HttpResponse
-from django.http import HttpResponseRedirect
+from django.shortcuts import render, HttpResponse, redirect
+from django.urls import reverse
+from django.http import HttpResponseRedirect, Http404
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
 
 from .models import Ticket, HelpTopic, TicketComment #, TicketAttachment
 from .forms import TicketForm, HelpTopicForm, TicketCommentForm #, TicketAttachmentForm
@@ -38,26 +40,39 @@ def create_new_ticket(request):
             ticket.save()
             logger.info(f'Ticket created: {ticket.issue_summary} by {request.user.username}')
             # Here you would typically send an email notification or perform other actions
-            return HttpResponseRedirect('/helpdesk/ticket/status/')  # Redirect to ticket status page after saving
+            return HttpResponseRedirect(reverse(
+                'ticket_detail',
+                kwargs={'ticket_id': ticket.id}
+            ))  # Redirect to ticket detail page after saving
     else:
         form = TicketForm()
     return render(request, 'helpdesk/new_ticket_form.html', {'form': form})
 
 @login_required
-def check_ticket_status(request):
+def check_ticket(request):
     """ Check the status of a ticket """
+    title = 'check_ticket'
+    
     if request.method == 'POST':
-        form = HelpTopicForm(request.POST)
-        if form.is_valid():
-            ticket_id = form.cleaned_data['ticket_id']
-            # Here you would typically look up the ticket by ID and get its status
-            # For now, we'll just redirect to a dummy ticket detail page
-            return HttpResponseRedirect(f'/helpdesk/ticket/{ticket_id}/')
-    else:
-        form = HelpTopicForm()
-    # You might want to include a list of tickets or some other information here
-    return render(request, 'helpdesk/check_ticket_status_form.html')
+        user = request.user  # Assuming the user is logged in
+        try:
+            ticket_id = request.POST.get('ticket_id')
+            ticket = Ticket.objects.get(id=ticket_id, user=user)  # Ensure the ticket belongs to the user
+            return HttpResponseRedirect(reverse(
+                'ticket_detail',
+                kwargs={'ticket_id': ticket.id}
+            ))  # Assuming 'status' is a field in your Ticket model
+        except Ticket.DoesNotExist:
+            # Handle the case where the ticket does not exist or does not belong to the user
+            # You might want to log this or show a message to the user
+            logger = logging.getLogger(__name__)
+            logger.warning(f'Ticket {ticket_id} not found or does not belong to user {user.username}')
+            # Here you could render a template with an error message or redirect to an error page
+            return HttpResponse('O Ticket não foi encontrado ou não pertence a esse usuário', status=404)
+        # For now, we'll just redirect to a dummy ticket detail page
+    return render(request, 'helpdesk/check_ticket_form.html', {'title': title})
 
+@login_required
 def ticket_detail(request, ticket_id):
     """ View ticket details """
     try:
@@ -73,11 +88,39 @@ def ticket_detail(request, ticket_id):
             comment.ticket = ticket
             comment.user = request.user  # Assuming the user is logged in
             comment.save()
-            return HttpResponseRedirect(f'/helpdesk/ticket/{ticket_id}/')  # Redirect to the same ticket detail page after saving
+            return HttpResponseRedirect(f'/ticket/{ticket_id}/')  # Redirect to the same ticket detail page after saving
     else:
         comment_form = TicketCommentForm()
 
     return render(request, 'helpdesk/ticket_detail.html', {'ticket': ticket, 'comments': comments, 'comment_form': comment_form})
+
+@login_required
+def change_ticket_status(request):
+    """ Change the status of a ticket """
+    # This function would typically handle changing the status of a ticket
+    # For now, we'll just return a dummy response
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            ticket_id = data.get('ticket_id')
+            new_status = data.get('status')
+
+            # Validate the ticket ID and new status here
+            if not ticket_id or not new_status:
+                return JsonResponse({'status': 'error', 'message': 'Invalid ticket ID or status'}, status=400)
+
+            ticket = Ticket.objects.get(id=ticket_id)
+            ticket.status = new_status  # Assuming 'status' is a field in your Ticket model
+            ticket.save()
+            # Log the status change
+            logger = logging.getLogger(__name__)
+            logger.info(f'Ticket {ticket_id} status changed to {new_status} by {request.user.username}')
+            
+            return JsonResponse({'status': new_status})
+        except json.JSONDecodeError:
+            return JsonResponse({'status': 'error', 'message': 'Invalid JSON data'}, status=400)
+    else:
+        return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=400)
 
 def edit_ticket(request, ticket_id):
     pass

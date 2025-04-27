@@ -1,0 +1,35 @@
+{% extends "helpdesk/base.html" %}
+{% block main_content %}
+    <div class="container p-4 border border-1 rounded-3 shadow-sm bg-light">
+        <h1>Lista de Tickets</h1>
+        <div class="container-fluid bg-white p-3 rounded-3 shadow-sm mb-4">
+            <p>
+                Aqui está a lista de tickets que você criou. Você pode visualizar o status e as respostas de cada ticket.
+            </p>
+        </div>
+
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID do Ticket</th>
+                    <th>Assunto</th>
+                    <th>Status</th>
+                    <th>Atribuido</th>
+                    <th>Detalhes</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ticket in tickets %}
+                    <tr>
+                        <td>{{ ticket.id }}</td>
+                        <td>{{ ticket.issue_summary }}</td>
+                        <td>{{ ticket.status }}</td>
+                        <td>{{ ticket.assigned_to }}</td>
+                        <td><a href="{% url 'ticket_detail' ticket.id %}" class="btn btn-outline-info">Ver Detalhes</a></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+{% endblock %}

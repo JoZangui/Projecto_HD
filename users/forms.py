@@ -4,6 +4,8 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.utils.translation import gettext_lazy as _
 
+from .models import Agents
+
 class UserRegistrationForm(UserCreationForm):
     """
     Form for user registration.
@@ -16,4 +18,16 @@ class UserRegistrationForm(UserCreationForm):
         widgets = {
             'username': forms.TextInput(attrs={'class': 'form-control', 'placeholder': _('John.doe')}),
             'email': forms.EmailInput(attrs={'class': 'form-control', 'type': "email", 'id':"InputEmail", 'placeholder': "example@company.com", 'aria-describedby': "emailHelp"}),
+        }
+
+class AgentRegistrationForm(forms.ModelForm):
+    """
+    Form for agent registration.
+    """
+    class Meta:
+        model = Agents
+        fields = ('user', 'privilege_level')
+        widgets = {
+            'user': forms.Select(attrs={'class': 'form-control'}),
+            'privilege_level': forms.Select(attrs={'class': 'form-control'}),
         }

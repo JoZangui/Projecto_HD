@@ -1,0 +1,15 @@
+{% extends "helpdesk/base.html" %}
+{% block main_content %}
+<div class="container w-50 p-4 border border-1 rounded-3 shadow-sm bg-light">
+    <h1>Ticket Status</h1>
+    <p class="text-secondary">Por favor, forneça seu endereço de e-mail e o número do ticket. Um link de acesso será enviado ao seu e-mail.</p>
+    <form action="{% url 'check_ticket' %}" method="post">
+      {% csrf_token %}
+      <div class="mb-3">
+        <label for="exampleInputPassword1" class="form-label">Ticket Number:</label>
+        <input class="form-control" type="number" name="ticket_id" placeholder="ex: 1234" aria-label=".form-control-lg example">
+      </div>
+      <button type="submit" class="btn btn-primary">Ver Ticket</button>
+    </form>
+</div>
+{% endblock %}

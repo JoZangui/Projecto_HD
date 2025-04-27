@@ -29,7 +29,7 @@ class TicketCommentForm(ModelForm):
         model = TicketComment
         fields = ['comment']
         widgets = {
-            'comment': forms.Textarea(attrs={'class': 'form-control', 'rows': 4, 'cols': 40}),
+            'comment': forms.Textarea(attrs={'class': 'form-control', 'placeholder': "Leave a comment here", 'id':"comment",'style':"resize: none; height: 200px;"}),
         }
 
 class HelpTopicForm(ModelForm):

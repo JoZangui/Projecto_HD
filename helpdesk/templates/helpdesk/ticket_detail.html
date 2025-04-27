@@ -1,0 +1,147 @@
+{% extends "helpdesk/base.html" %}
+{% block main_content %}
+    <div class="container p-4 border border-1 rounded-3 shadow-sm bg-light">
+        <h1>Detalhes do Ticket</h1>
+        <div class="container-fluid bg-white p-3 rounded-3 shadow-sm mb-4">
+            <div class="row px-3">
+                <div class="col-12">
+                    {% if ticket.status == "Aberto"%}
+                        <span class="fw-bold fst-italic text-secondary">Status: <span class="text-primary fs-6" id="status_info">{{ ticket.status }}</span></span>
+                    {% elif ticket.status == "Em Progresso" %}
+                        <span class="fw-bold fst-italic text-secondary">Status: <span class="text-warning fs-6">{{ ticket.status }}</span></span>
+                    {% else %}
+                        <span class="fw-bold fst-italic text-secondary">Status: <span class="text-danger fs-6">{{ ticket.status }}</span></span>
+                    {% endif %}
+                    <br>
+                    <span class="fw-bold fst-italic text-secondary">Atribuído à: <span class="fw-normal fs-6">{{ ticket.assigned_to }}</span></span>
+                    <br>
+                    <span class="text-secondary fst-italic"><span class="fw-bold">Ticket Nº:</span> {{ ticket.id }}</span>
+                    <br>
+                    <span class="text-secondary fst-italic"><span class="fw-bold">Criado em:</span> {{ticket.created_at}}</span>
+                    <br>
+                    <span class="text-secondary fst-italic">
+                        <span class="fw-bold">Criado Por:</span> {{ticket.user}}
+                    </span>
+                    <hr>
+                    <h4>Assunto: <span class="fst-italic fw-normal text-secondary">{{ ticket.issue_summary }}</span></h4>
+                    <br>
+                    <p>
+                        {{ticket.description}}
+                    </p>
+                </div>
+                <!-- comentários -->
+                <div class="col-12">
+                    <hr>
+                    <h5>Comentários:</h5>
+                    <div class="row p-2">
+                        {% for comment in comments %}
+                            <!-- se o comentário for de alguem da área de suporte o bg será bg-primary -->
+                            {% if comment.user.is_superuser %}
+                            <div class="col-12 text-white mb-3 bg-primary p-3 rounded-3 shadow-sm">
+                            {% else %} <!-- se não o bg será bg-info -->
+                            <div class="col-12 text-white mb-3 bg-info p-3 rounded-3 shadow-sm">
+                            {% endif %}
+                                <h6><i class="bi bi-person-circle"></i> {{comment.user}}</h6>
+                                <span class="fst-italic text-secondary text-white">{{comment.created_at}}</span>
+                                <br>
+                                <br>
+                                {% if comment.user == ticket.assigned_to %}
+                                    <span class="badge bg-warning text-dark">Atribuído</span>
+                                {% endif %}
+                                {% if comment.user == ticket.user %}
+                                    <span class="badge bg-success text-light">Criador</span>
+                                {% endif %}
+                                {% if comment.user == ticket.assigned_to and comment.user == ticket.user %}
+                                    <span class="badge bg-danger text-light">Criador e Atribuído</span>
+                                {% endif %}
+                                {% if comment.user == ticket.assigned_to and comment.user != ticket.user %}
+                                    <span class="badge bg-danger text-light">Atribuído</span>
+                                {% endif %}
+                                {% if comment.user != ticket.assigned_to and comment.user != ticket.user %}
+                                    <span class="badge bg-secondary text-light">Suporte</span>
+                                {% endif %}
+                                <hr>
+                                <p>{{comment.comment}}</p>
+                            </div>
+                        {% empty %}
+                            <p class="fst-italic text-secondary">Não há comentários disponíveis.</p>
+                        {% endfor %}
+                    </div>
+                </div>
+                <!-- fim de comentários -->
+                <!-- formulário de comentário -->
+                <div class="col-12">
+                    <form action="{% url 'ticket_detail' ticket.id %}" method="POST">
+                        {% csrf_token %}
+                        {% if comment_form.errors %}
+                            <div class="alert alert-danger" role="alert">
+                                {{ comment_form.errors.as_text }}
+                            </div>
+                        {% endif %}
+                        <div class="form-floating">
+                            {{comment_form.comment}}
+                            <label for="comment">Adicionar Comentário</label>
+                        </div>
+                        <br>
+                        <button type="submit" class="btn btn-outline-primary">Enviar Comentário</button>
+                    </form>
+                </div>
+                <!-- fim do formulário de comentários -->
+            </div>
+            {% if user.is_superuser %}  
+                <div class="px-3 mt-4">
+                    <hr>
+                    <h5>Alterar Status do Ticket</h5>
+                    <p class="fst-italic text-secondary">Você pode fechar o ticket caso a situação se tenha resolvido.</p>
+                    <div class="w-50">
+                        {% csrf_token %}
+                        <select class="form-select" aria-label="Default select example" name="status" id="status">
+                            <option selected>{{ticket.status}}</option>
+                            <option value="Aberto">Aberto</option>
+                            <option value="Em Progresso">Em Progresso</option>
+                            <option value="Fechado">Fechado</option>
+                        </select>
+                        <br>
+                        <button type="button" class="btn btn-outline-warning" id="change_status_btn">Alterar Status</button>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}  
+    <script>
+        // Script para alterar o status do ticket
+        let change_status_btn = document.getElementById("change_status_btn");
+        let new_status = document.getElementById("status");
+
+        const sendData = async (event) => {
+            event.preventDefault(); // Impede o envio do formulário padrão
+            let status = new_status.value;
+            let ticket_id = "{{ ticket.id }}"; // Obtém o ID do ticket do template
+            const data = {status: status, ticket_id: ticket_id};
+
+            try {
+                const response = await fetch("{% url 'change_ticket_status' %}", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": "{{ csrf_token }}"
+                    },
+                    body: JSON.stringify(data)
+                });
+                if (response.ok) {
+                    location.reload(); // Recarrega a página para ver as alterações
+                } else {
+                    alert("Erro ao alterar o status do ticket.");
+                }
+            } catch (error) {
+                console.error("Erro:", error);
+            }
+        };
+
+        change_status_btn.addEventListener("click", sendData);
+        // Fim do Script para alterar o status do ticket
+    </script>
+{% endblock %}
