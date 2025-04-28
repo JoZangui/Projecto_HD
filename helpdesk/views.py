@@ -4,11 +4,12 @@ import logging, json
 from django.shortcuts import render, HttpResponse, redirect
 from django.urls import reverse
 from django.http import HttpResponseRedirect, Http404
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import JsonResponse
 
 from .models import Ticket, HelpTopic, TicketComment #, TicketAttachment
 from .forms import TicketForm, HelpTopicForm, TicketCommentForm #, TicketAttachmentForm
+from users.models import Agents
 
 # Create your views here.
 def index(request):
@@ -24,7 +25,14 @@ def admin_page(request):
 @login_required
 def ticket_list(request):
     """ List all tickets """
-    tickets = Ticket.objects.all()
+    user_is_staff_member = Agents.objects.filter(user=request.user).values_list('privilege_level', flat=True)
+    print(user_is_staff_member)
+    # admin pode ver todos os tickets, enquanto os outros usuários podem ver apenas os tickets atribuídos a eles
+    if user_is_staff_member[0] == 'admin':
+        tickets = Ticket.objects.all()
+    else:
+        tickets = Ticket.objects.filter(assigned_to=request.user.agent)  # Assuming the user is logged in and has a related Ticket object
+    # You might want to add pagination or filtering here
     return render(request, 'helpdesk/ticket_list.html', {'tickets': tickets})
 
 @login_required
@@ -122,7 +130,47 @@ def change_ticket_status(request):
     else:
         return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=400)
 
+@login_required
+@user_passes_test(lambda u: u.is_superuser or u.agent.privilege_level == 'admin')
+def assign_ticket(request, ticket_id):
+    """ Assign a ticket to an agent """
+    # This function would typically handle assigning a ticket to an agent
+    # For now, we'll just return a dummy response
+    if request.method == 'POST':
+        try:
+            agent_id = request.POST.get('agent_id')
+            # Assuming you have a way to assign tickets to agents
+            if agent_id == 'success':
+                return JsonResponse({'status': 'success'})
+            elif agent_id == 'error':
+                return JsonResponse({'status': 'error', 'message': 'Error assigning ticket'}, status=400)
+            
+            agent = Agents.objects.get(id=agent_id)  # Assuming you have an Agent model
+
+            ticket = Ticket.objects.get(id=ticket_id)
+            ticket.assigned_to = agent  # Assuming 'assigned_to' is a field in your Ticket model
+            ticket.save()
+            
+            # Log the assignment
+            logger = logging.getLogger(__name__)
+            logger.info(f'Ticket {ticket_id} assigned to agent {agent_id} by {request.user.username}')
+            
+            return HttpResponseRedirect(reverse(
+                'ticket_detail',
+                kwargs={'ticket_id': ticket.id}
+            ))  # Redirect to ticket detail page after saving
+        except json.JSONDecodeError:
+            return JsonResponse({'status': 'error', 'message': 'Invalid JSON data'}, status=400)
+    else:
+        # Assuming you have an Agent model and a way to get all agents
+        return render(request, 'helpdesk/assign_ticket_form.html', {'agents': Agents.objects.all(), 'ticket_id': ticket_id})
+
+@login_required
 def edit_ticket(request, ticket_id):
+    pass
+
+@login_required
+def delete_ticket(request, ticket_id):
     pass
 
 def create_help_topic(request):

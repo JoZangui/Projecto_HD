@@ -19,6 +19,10 @@ urlpatterns = [
     path('ticket/new_status/', views.change_ticket_status, name='change_ticket_status'),
     # criar um novo topico de ajuda
     path('help_topic/new/', views.create_help_topic, name='create_help_topic'),
-    # path('ticket/<int:ticket_id>/edit/', views.edit_ticket, name='edit_ticket'),
-    # path('ticket/<int:ticket_id>/delete/', views.delete_ticket, name='delete_ticket'),
+    # atribuir ticket a um agente
+    path('ticket/<int:ticket_id>/assign/', views.assign_ticket, name='assign_ticket'),
+    # editar ticket
+    path('ticket/<int:ticket_id>/edit/', views.edit_ticket, name='edit_ticket'),
+    # deletar ticket
+    path('ticket/<int:ticket_id>/delete/', views.delete_ticket, name='delete_ticket'),
 ]

@@ -1,0 +1,31 @@
+{% extends "helpdesk/base.html" %}
+{% block main_content %}
+<div class="container p-4 border border-1 rounded-3 shadow-sm bg-light">
+    <!-- breadcrumb -->
+    <nav style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='currentColor'/%3E%3C/svg%3E&#34;);" aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'agent_detail' agent.id %}">Detalhes do Agente</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Editar Agente</li>
+        </ol>
+    </nav>
+    <!-- fim do breadcrumb -->
+    <h1 class="fw-bold">Editar Agente</h1>
+    <h6 class="text-secondary">Info do Agente:</h6>
+    <div class="container px-4 py-2 border border-1 rounded-3 shadow-sm bg-light">
+        <h6 class="fw-bold text-secondary">Agente:</h6>
+        <h6 class="fw-bold">
+            {{agent.user.email}} <small><span class="badge bg-secondary text-light">{{ agent.privilege_level }}</span></small>
+        </h6>
+    </div>
+    <br>
+    <form method="post" action="{% url 'agent_registration' %}">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="exampleInputPassword1" class="form-label text-secondary">Definir Privilégios de Usuário:</label>
+            {{form.privilege_level}}
+        </div>
+        <br>
+        <button type="submit" class="btn btn-primary w-100">Submit</button>
+    </form>
+</div>
+{% endblock %}

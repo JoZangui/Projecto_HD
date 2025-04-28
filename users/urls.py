@@ -16,11 +16,11 @@ urlpatterns = [
     # Agent registration page
     path('agent/register/', views.agent_registration, name='agent_registration'),
     # Agent list page
-    # path('agent/list/', views.agent_list, name='agent_list'),
+    path('agent/list/', views.agent_list, name='agent_list'),
     # # Agent detail page
-    # path('agent/<int:pk>/', views.agent_detail, name='agent_detail'),
+    path('agent/<int:pk>/', views.agent_detail, name='agent_detail'),
     # # Agent update page
-    # path('agent/update/<int:pk>/', views.agent_update, name='agent_update'),
+    path('agent/update/<int:pk>/', views.agent_update, name='agent_update'),
     # # Agent delete page
     # path('agent/delete/<int:pk>/', views.agent_delete, name='agent_delete'),
 ]

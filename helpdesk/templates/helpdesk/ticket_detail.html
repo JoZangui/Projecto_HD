@@ -1,7 +1,15 @@
 {% extends "helpdesk/base.html" %}
 {% block main_content %}
     <div class="container p-4 border border-1 rounded-3 shadow-sm bg-light">
-        <h1>Detalhes do Ticket</h1>
+        <!-- breadcrumb -->
+        <nav style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='currentColor'/%3E%3C/svg%3E&#34;);" aria-label="breadcrumb">
+            <ol class="breadcrumb">
+              <li class="breadcrumb-item"><a href="{% url 'ticket_list' %}">Lista de Tickets</a></li>
+              <li class="breadcrumb-item active" aria-current="page">Detalhes do Ticket</li>
+            </ol>
+        </nav>
+        <!-- fim do breadcrumb -->
+        <h1 class="fw-bold">Detalhes do Ticket</h1>
         <div class="container-fluid bg-white p-3 rounded-3 shadow-sm mb-4">
             <div class="row px-3">
                 <div class="col-12">
@@ -13,7 +21,12 @@
                         <span class="fw-bold fst-italic text-secondary">Status: <span class="text-danger fs-6">{{ ticket.status }}</span></span>
                     {% endif %}
                     <br>
-                    <span class="fw-bold fst-italic text-secondary">Atribuído à: <span class="fw-normal fs-6">{{ ticket.assigned_to }}</span></span>
+                    <span class="fw-bold fst-italic text-secondary">Atribuído à:
+                        <span class="fw-normal fs-6">{{ ticket.assigned_to.user.first_name }} {{ ticket.assigned_to.user.last_name }}</span>
+                        {% if user.agent.privilege_level == 'admin' %}
+                            &NonBreakingSpace; <small><a href="{% url 'assign_ticket' ticket.id %}" class="link text-primary">Editar Atribuição</a></small>
+                        {% endif %}
+                    </span>
                     <br>
                     <span class="text-secondary fst-italic"><span class="fw-bold">Ticket Nº:</span> {{ ticket.id }}</span>
                     <br>
@@ -46,19 +59,19 @@
                                 <br>
                                 <br>
                                 {% if comment.user == ticket.assigned_to %}
-                                    <span class="badge bg-warning text-dark">Atribuído</span>
+                                    <span class="badge bg-secondary text-dark">Atribuído</span>
                                 {% endif %}
                                 {% if comment.user == ticket.user %}
                                     <span class="badge bg-success text-light">Criador</span>
                                 {% endif %}
                                 {% if comment.user == ticket.assigned_to and comment.user == ticket.user %}
-                                    <span class="badge bg-danger text-light">Criador e Atribuído</span>
+                                    <span class="badge bg-warning text-light">Criador e Atribuído</span>
                                 {% endif %}
-                                {% if comment.user == ticket.assigned_to and comment.user != ticket.user %}
-                                    <span class="badge bg-danger text-light">Atribuído</span>
+                                {% if comment.user == ticket.assigned_to and comment.user.agent.privilege_level == 'admin' %}
+                                    <span class="badge bg-danger text-light">Amin</span>
                                 {% endif %}
-                                {% if comment.user != ticket.assigned_to and comment.user != ticket.user %}
-                                    <span class="badge bg-secondary text-light">Suporte</span>
+                                {% if comment.user.agent.privilege_level == 'admin' %}
+                                    <span class="badge bg-danger text-light">Admin</span>
                                 {% endif %}
                                 <hr>
                                 <p>{{comment.comment}}</p>

@@ -14,9 +14,11 @@ class UserRegistrationForm(UserCreationForm):
     
     class Meta:
         model = User
-        fields = ('username', 'email', 'password1', 'password2')
+        fields = ('username', 'email', 'first_name', 'last_name', 'password1', 'password2')
         widgets = {
             'username': forms.TextInput(attrs={'class': 'form-control', 'placeholder': _('John.doe')}),
+            'first_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': _('John')}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': _('Doe')}),
             'email': forms.EmailInput(attrs={'class': 'form-control', 'type': "email", 'id':"InputEmail", 'placeholder': "example@company.com", 'aria-describedby': "emailHelp"}),
         }
 
@@ -31,3 +33,9 @@ class AgentRegistrationForm(forms.ModelForm):
             'user': forms.Select(attrs={'class': 'form-control'}),
             'privilege_level': forms.Select(attrs={'class': 'form-control'}),
         }
+
+    # Filtrar usuários no campo de seleção de usuário para mostrar apenas aqueles que não são agentes
+    def __init__(self, *args, **kwargs):
+        # Filtra os usuários que não estão cadastrados como agentes
+        super(AgentRegistrationForm, self).__init__(*args, **kwargs)
+        self.fields['user'].queryset = User.objects.exclude(id__in=Agents.objects.values_list('user', flat=True))

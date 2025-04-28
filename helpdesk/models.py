@@ -3,6 +3,8 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 from django.core.exceptions import ValidationError
 
+from users.models import Agents
+
 class HelpTopic(models.Model):
     """
     Model representing a help topic for categorizing tickets.
@@ -28,7 +30,7 @@ class Ticket(models.Model):
         ('high', 'High'),
         ('urgent', 'Urgent')
     ], default='medium') # essa prioridade do ticket vai ser preenchida de forma com signals
-    assigned_to = models.ForeignKey(User, null=True, blank=True, related_name='assigned_tickets', on_delete=models.SET_NULL)  # User assigned to resolve the ticket
+    assigned_to = models.ForeignKey(Agents, null=True, blank=True, related_name='assigned_tickets', on_delete=models.SET_NULL)  # User assigned to resolve the ticket
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(default=timezone.now)
     due_date = models.DateTimeField(null=True, blank=True)  # Optional due date for resolution

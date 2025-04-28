@@ -1,0 +1,36 @@
+{% extends "helpdesk/base.html" %}
+{% block main_content %}
+    <div class="container p-4 border border-1 rounded-3 shadow-sm bg-light">
+        <h1 class="fw-bold">Agentes</h1>
+        <p class="text-secondary">Lista de Agentes do Helpdesk</p>
+        <hr>
+        <small><a href="{% url 'agent_registration' %}" class="btn btn-sm btn-outline-primary">Adicionar Novo Agente</a></small>
+        <br>
+        <br>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Nível de Privilégios</th>
+                    <th>Atribuições</th>
+                    <th>Detalhes</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for agent in agents %}
+                    <tr>
+                        <td>{{ agent.user.first_name }} {{ agent.user.last_name }}</td>
+                        <td>{{ agent.privilege_level }}</td>
+                        {% if agent.assigned_tickets %}
+                            <td>{{ agent.assigned_tickets.all|length }}</td>
+                        {% else %}
+                            <td><span class="text-danger">Não Atribuído</span></td>
+                        {% endif %}
+                        <td><a href="{% url 'agent_detail' agent.id %}" class="btn btn-outline-info">Ver Detalhes</a></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+{% endblock %}

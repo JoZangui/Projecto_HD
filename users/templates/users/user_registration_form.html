@@ -1,8 +1,8 @@
 {% extends "helpdesk/base.html" %}
 {% block main_content %}
-<div class="container w-50 p-4 border border-1 rounded-3 shadow-sm bg-light">
+<div class="container p-4 border border-1 rounded-3 shadow-sm bg-light">
     <h1>Registrar</h1>
-    <p class="text-secondary">Por favor, preencha o formulário abaixo para abrir um novo Ticket.</p>
+    <p class="text-secondary">Por favor, preencha o formulário abaixo para se Registrar.</p>
     <form method="post" action="{% url 'user_registration' %}">
         {% csrf_token %}
         <div class="mb-3">
@@ -12,17 +12,24 @@
           <div id="emailHelp" class="form-text">Nunca compartilharemos seu e-mail com mais ninguém..</div>
         </div>
         <div class="mb-3">
-            <label for="exampleInputPassword1" class="form-label">Username:</label>
-            <!-- <input class="form-control" type="text" aria-label=".form-control-lg example"> -->
+            <label for="exampleUsername" class="form-label">Username:</label>
             {{form.username}}
             <div class="form-text">Este nome será usado em início de sessão</div>
         </div>
         <div class="mb-3">
-            <label for="inputEmail1" class="form-label">Password: </label><br>
+            <label for="exampleFirstname" class="form-label">Primeiro Nome:</label>
+            {{form.first_name}}
+        </div>
+        <div class="mb-3">
+            <label for="exampleLastname" class="form-label">Último Nome:</label>
+            {{form.last_name}}
+        </div>
+        <div class="mb-3">
+            <label for="exampleInputPassword1" class="form-label">Password: </label><br>
             {{form.password1}}
         </div>
         <div class="mb-3">
-            <label for="inputEmail2" class="form-label">Confirme a Password:</label><br>
+            <label for="exampleInputPassword2" class="form-label">Confirme a Password:</label><br>
             {{form.password2}}
         </div>
         <br>

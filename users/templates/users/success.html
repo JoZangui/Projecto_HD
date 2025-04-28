@@ -3,4 +3,7 @@
 {% block mainn_content %}
     <h1>Sucesso!</h1>
     <p>Sejam bem-vindos ao Helpdesk!</p>
+    Clique <a href="{% url 'login' %}">aqui</a> para Iniciar sessão.
+    <p>Se você não recebeu o e-mail de confirmação, verifique sua caixa de spam ou clique <a href="{% url 'resend_activation' %}">aqui</a> para reenviar o e-mail.</p>
+    <p>Se você não recebeu o e-mail de confirmação, verifique sua caixa de spam ou clique <a href="{% url 'resend_activation' %}">aqui</a> para reenviar o e-mail.</p>
 {% endblock %}

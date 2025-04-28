@@ -17,3 +17,8 @@ class Agents(models.Model):
 
     def __str__(self):
         return self.user.username  # or any other field you want to display
+    
+    class Meta:
+        verbose_name = _('Agent')
+        verbose_name_plural = _('Agents')
+        ordering = ['user__username']
