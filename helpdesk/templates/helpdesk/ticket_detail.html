@@ -23,9 +23,6 @@
                     <br>
                     <span class="fw-bold fst-italic text-secondary">Atribuído à:
                         <span class="fw-normal fs-6">{{ ticket.assigned_to.user.first_name }} {{ ticket.assigned_to.user.last_name }}</span>
-                        {% if user.agent.privilege_level == 'admin' %}
-                            &NonBreakingSpace; <small><a href="{% url 'assign_ticket' ticket.id %}" class="link text-primary">Editar Atribuição</a></small>
-                        {% endif %}
                     </span>
                     <br>
                     <span class="text-secondary fst-italic"><span class="fw-bold">Ticket Nº:</span> {{ ticket.id }}</span>
@@ -35,6 +32,12 @@
                     <span class="text-secondary fst-italic">
                         <span class="fw-bold">Criado Por:</span> {{ticket.user}}
                     </span>
+                    <br>
+                    <br>
+                    {% if user.agent.privilege_level == 'admin' %}
+                        <a href="{% url 'assign_ticket' ticket.id %}" class="btn btn-sm btn-outline-primary">Editar Atribuição</a>
+                    {% endif %}
+                    
                     <hr>
                     <h4>Assunto: <span class="fst-italic fw-normal text-secondary">{{ ticket.issue_summary }}</span></h4>
                     <br>
@@ -54,27 +57,29 @@
                             {% else %} <!-- se não o bg será bg-info -->
                             <div class="col-12 text-white mb-3 bg-info p-3 rounded-3 shadow-sm">
                             {% endif %}
-                                <h6><i class="bi bi-person-circle"></i> {{comment.user}}</h6>
-                                <span class="fst-italic text-secondary text-white">{{comment.created_at}}</span>
-                                <br>
-                                <br>
-                                {% if comment.user == ticket.assigned_to %}
+                                <h6>
+                                    <i class="bi bi-person-circle"></i> {{comment.user.first_name}} {{comment.user.last_name}}
+                                    {% if comment.user == ticket.assigned_to %}
                                     <span class="badge bg-secondary text-dark">Atribuído</span>
-                                {% endif %}
-                                {% if comment.user == ticket.user %}
+                                    {% endif %}
+                                    {% if comment.user == ticket.user %}
                                     <span class="badge bg-success text-light">Criador</span>
-                                {% endif %}
-                                {% if comment.user == ticket.assigned_to and comment.user == ticket.user %}
+                                    {% endif %}
+                                    {% if comment.user == ticket.assigned_to and comment.user == ticket.user %}
                                     <span class="badge bg-warning text-light">Criador e Atribuído</span>
-                                {% endif %}
-                                {% if comment.user == ticket.assigned_to and comment.user.agent.privilege_level == 'admin' %}
+                                    {% endif %}
+                                    {% if comment.user == ticket.assigned_to and comment.user.agent.privilege_level == 'admin' %}
                                     <span class="badge bg-danger text-light">Amin</span>
-                                {% endif %}
-                                {% if comment.user.agent.privilege_level == 'admin' %}
+                                    {% endif %}
+                                    {% if comment.user.agent.privilege_level == 'admin' %}
                                     <span class="badge bg-danger text-light">Admin</span>
-                                {% endif %}
+                                    {% endif %}
+                                </h6>
+                                <span class="fst-italic text-secondary text-white">{{comment.created_at}}</span>
                                 <hr>
-                                <p>{{comment.comment}}</p>
+                                <div class="container p-4 bg-white rounded-3 shadow-sm text-dark">
+                                    <p>{{comment.comment}}</p>
+                                </div>
                             </div>
                         {% empty %}
                             <p class="fst-italic text-secondary">Não há comentários disponíveis.</p>
@@ -115,7 +120,7 @@
                             <option value="Fechado">Fechado</option>
                         </select>
                         <br>
-                        <button type="button" class="btn btn-outline-warning" id="change_status_btn">Alterar Status</button>
+                        <button type="button" class="btn btn-outline-warning" id="change_status_btn">Definir Status</button>
                     </div>
                 </div>
             {% endif %}

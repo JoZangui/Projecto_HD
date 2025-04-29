@@ -42,3 +42,15 @@ class HelpTopicForm(ModelForm):
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter the name of the help topic'}),
         }
+
+class PriorityForm(forms.Form):
+    """
+    Form for selecting ticket priority.
+    """
+    PRIORITY_CHOICES = [
+        ('low', 'Low'),
+        ('medium', 'Medium'),
+        ('high', 'High'),
+        ('urgent', 'Urgent')
+    ]
+    priority = forms.ChoiceField(choices=PRIORITY_CHOICES, widget=forms.Select(attrs={'class': 'form-select'}))

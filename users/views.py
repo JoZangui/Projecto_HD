@@ -15,7 +15,7 @@ def user_registration(request):
     # redireciona para a página home se o usuário já estiver activo no site e não for um agente com nível de privilégio 'admin'
     try:
         if request.user.is_authenticated and request.user.agent.privilege_level != 'admin':
-            return redirect('index')
+            return redirect('admin_page')
     except Agents.DoesNotExist:
         return HttpResponse("Algo aconteceu, não conseguimos encontrar a página.", status=404)
 
@@ -37,15 +37,12 @@ def success(request):
     """
     # redireciona para a página home se o usuário já estiver activo no site e não for um superuser ou não for um agente com nível de privilégio 'admin'
     try:
-        if request.user.is_authenticated:
-            if request.user.agent.privilege_level == 'admin':
-                return redirect('admin_page')
+        if request.user.is_authenticated and request.user.agent.privilege_level == 'admin':
+            return redirect('admin_page')
         else:
             return redirect('login')
     except Agents.DoesNotExist:
         return HttpResponse("Algo aconteceu, não conseguimos encontrar a página.", status=404)
-    return render(request, 'users/success.html')
-
 
 def user_login(request):
     """
@@ -72,18 +69,11 @@ def user_login(request):
     return render(request, 'users/login.html')
 
 @login_required
+@user_passes_test(lambda u: u.agent.privilege_level == 'admin')
 def agent_registration(request):
     """
     View for agent registration.
     """
-    # redireciona para a página home se o usuário não for um superuser ou não for um agente com nível de privilégio 'admin'
-    # Se o usuário não for um superuser ou não for um agente com nível de privilégio 'admin', levantamos um erro http500
-    try:
-        if not request.user.is_superuser and request.user.agent.privilege_level != 'admin':
-            return HttpResponse("Infelizmente você não tem autorização para aceder a essa página.")
-    except Agents.DoesNotExist:
-        return HttpResponse("Infelizmente você não tem autorização para aceder a essa página.") 
-
     if request.method == 'POST':
         form = AgentRegistrationForm(request.POST)
         if form.is_valid():
@@ -99,35 +89,21 @@ def agent_registration(request):
 
 
 @login_required
+@user_passes_test(lambda u: u.agent.privilege_level == 'admin')
 def agent_detail(request, pk):
     """
     View for agent detail.
     """
-    # redireciona para a página home se o usuário não for um superuser ou não for um agente com nível de privilégio 'admin'
-    # Se o usuário não for um superuser ou não for um agente com nível de privilégio 'admin', levantamos um erro http500
-    try:
-        if not request.user.is_superuser and request.user.agent.privilege_level != 'admin':
-            return HttpResponse("Infelizmente você não tem autorização para aceder a essa página.")
-    except Agents.DoesNotExist:
-        return HttpResponse("Infelizmente você não tem autorização para aceder a essa página.") 
-
     agent = Agents.objects.get(pk=pk)
     tickets = agent.assigned_tickets.all()  # Assuming you have a related name for the tickets assigned to the agent
     return render(request, 'users/agent_detail.html', {'agent': agent, 'tickets': tickets})
 
 @login_required
+@user_passes_test(lambda u: u.agent.privilege_level == 'admin')
 def agent_update(request, pk):
     """
     View for agent update.
     """
-    # redireciona para a página home se o usuário não for um superuser ou não for um agente com nível de privilégio 'admin'
-    # Se o usuário não for um superuser ou não for um agente com nível de privilégio 'admin', levantamos um erro http500
-    try:
-        if not request.user.is_superuser and request.user.agent.privilege_level != 'admin':
-            return HttpResponse("Infelizmente você não tem autorização para aceder a essa página.")
-    except Agents.DoesNotExist:
-        return HttpResponse("Infelizmente você não tem autorização para aceder a essa página.") 
-
     agent = Agents.objects.get(pk=pk)
     if request.method == 'POST':
         form = AgentRegistrationForm(request.POST, instance=agent)

@@ -1,6 +1,6 @@
 {% extends "helpdesk/base.html" %}
 {% block main_content %}
-    <div class="container p-4 border border-1 rounded-3 shadow-sm bg-light">
+    <div class="container p-4 bg bg-1 rounded-3 shadow-sm bg-light">
         <h1 class="fw-bold">Lista de Tickets</h1>
         <div class="container-fluid bg-white p-3 rounded-3 shadow-sm mb-4">
             <p>
@@ -8,6 +8,11 @@
             </p>
         </div>
 
+        <div class="d-flex justify-content-left mt-4">
+            <a href="{% url 'create_help_topic' %}" class="btn btn-sm btn-outline-primary">Adicionar Novo Tópico</a>
+        </div>
+        <div></div>
+        <br>
         <table class="table table-striped">
             <thead>
                 <tr>
@@ -15,6 +20,7 @@
                     <th>Assunto</th>
                     <th>Status do ticket</th>
                     <th>Atribuido</th>
+                    <th>Criado em:</th>
                     <th>Detalhes</th>
                 </tr>
             </thead>
@@ -23,9 +29,22 @@
                     <tr>
                         <td>{{ ticket.id }}</td>
                         <td>{{ ticket.issue_summary }}</td>
-                        <td>{{ ticket.status }}</td>
+                        {% if ticket.status == "Aberto"%}
+                            <td class="fw-bold">
+                                <small class="text-white bg-primary p-1" id="status_info">{{ ticket.status }}</small>
+                            </td>
+                        {% elif ticket.status == "Em Progresso" %}
+                            <td class="fw-bold">
+                                <small class="text-white bg-warning p-1">{{ ticket.status }}</small>
+                            </td>
+                        {% else %}
+                            <td class="fw-bold">
+                                <small class="text-white bg-danger p-1">{{ ticket.status }}</small>
+                            </td>
+                        {% endif %}
                         <td>{{ ticket.assigned_to.user.first_name }} {{ ticket.assigned_to.user.last_name }}</td>
-                        <td><a href="{% url 'ticket_detail' ticket.id %}" class="btn btn-outline-info">Ver Detalhes</a></td>
+                        <td>{{ ticket.created_at }}</td>
+                        <td><a href="{% url 'ticket_detail' ticket.id %}" class="btn btn-sm btn-outline-info">Ver Detalhes</a></td>
                     </tr>
                 {% empty %}
                     <tr class="text-center">

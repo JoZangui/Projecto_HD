@@ -26,7 +26,7 @@
                         {% else %}
                             <td><span class="text-danger">Não Atribuído</span></td>
                         {% endif %}
-                        <td><a href="{% url 'agent_detail' agent.id %}" class="btn btn-outline-info">Ver Detalhes</a></td>
+                        <td><a href="{% url 'agent_detail' agent.id %}" class="btn btn-sm btn-outline-info">Ver Detalhes</a></td>
                     </tr>
                 {% endfor %}
             </tbody>

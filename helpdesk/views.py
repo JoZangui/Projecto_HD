@@ -26,7 +26,6 @@ def admin_page(request):
 def ticket_list(request):
     """ List all tickets """
     user_is_staff_member = Agents.objects.filter(user=request.user).values_list('privilege_level', flat=True)
-    print(user_is_staff_member)
     # admin pode ver todos os tickets, enquanto os outros usuários podem ver apenas os tickets atribuídos a eles
     if user_is_staff_member[0] == 'admin':
         tickets = Ticket.objects.all()
@@ -173,6 +172,8 @@ def edit_ticket(request, ticket_id):
 def delete_ticket(request, ticket_id):
     pass
 
+@login_required
+@user_passes_test(lambda u: u.agent.privilege_level == 'admin')
 def create_help_topic(request):
     """ Create a new help topic """
     if request.method == 'POST':

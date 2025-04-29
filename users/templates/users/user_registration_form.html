@@ -1,8 +1,8 @@
 {% extends "helpdesk/base.html" %}
 {% block main_content %}
 <div class="container p-4 border border-1 rounded-3 shadow-sm bg-light">
-    <h1>Registrar</h1>
-    <p class="text-secondary">Por favor, preencha o formulário abaixo para se Registrar.</p>
+    <h1 class="fw-bold">Registrar</h1>
+    <p class="text-secondary">Por favor, preencha o formulário abaixo para se registrar.</p>
     <form method="post" action="{% url 'user_registration' %}">
         {% csrf_token %}
         <div class="mb-3">
@@ -33,7 +33,7 @@
             {{form.password2}}
         </div>
         <br>
-        <button type="submit" class="btn btn-primary w-100">Submit</button>
+        <button type="submit" class="btn btn-primary">Registrar Usuário</button>
     </form>
 </div>
 {% endblock %}

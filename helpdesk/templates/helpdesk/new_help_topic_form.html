@@ -1,8 +1,16 @@
 {% extends "helpdesk/base.html" %}
 {% block main_content %}
-<div class="container w-50 p-4 border border-1 rounded-3 shadow-sm bg-light">
-    <h1>Adicionar Novo Tópico de Ajuda</h1>
-    <p class="text-secondary">Por favor, preencha o formulário abaixo para abrir um novo Ticket.</p>
+<div class="container p-4 border border-1 rounded-3 shadow-sm bg-light">
+    <!-- breadcrumb -->
+    <nav style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='currentColor'/%3E%3C/svg%3E&#34;);" aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{% url 'ticket_list' %}">Lista de Tickets</a></li>
+          <li class="breadcrumb-item active" aria-current="page">Adiconar Novo Tópico</li>
+        </ol>
+    </nav>
+    <!-- fim do breadcrumb -->
+    <h1 class="fw-bold">Adicionar Novo Tópico</h1>
+    <p class="text-secondary">Por favor, preencha o formulário abaixo para adicionar um novo tópico.</p>
     <form method="post" action="{% url 'create_help_topic' %}">
         {% csrf_token %}
         <div class="mb-3">
@@ -10,7 +18,7 @@
            {{form.name}}
         </div>
         <br>
-        <button type="submit" class="btn btn-primary w-100">Submit</button>
+        <button type="submit" class="btn btn-primary">Registar Novo Tópico</button>
     </form>
 </div>
 {% endblock %}
