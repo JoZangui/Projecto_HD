@@ -1,7 +1,30 @@
+""" helpdesk/forms.py """
 from django import forms
 from django.forms import ModelForm
 
 from .models import Ticket, HelpTopic, TicketComment, TicketAttachment, Tasks, Agents
+
+# opção para habilitar o envio de múltiplos arquivos
+# https://stackoverflow.com/questions/77212709/django-clearablefileinput-does-not-support-uploading-multiple-files-error
+class MultipleFileInput(forms.ClearableFileInput):
+    """
+    Custom file input widget that allows multiple file uploads.
+    """
+    allow_multiple_selected = True
+
+class MultipleFileField(forms.FileField):
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault('widget', MultipleFileInput())
+        super().__init__(*args, **kwargs)
+
+    def clean(self, data, initial = ...):
+        single_file_clean = super().clean
+
+        if isinstance(data, (list, tuple)):
+            result = [single_file_clean(dta, initial) for dta in data]
+        else:
+            result = single_file_clean(data, initial)
+        return result
 
 class TicketForm(ModelForm):
     """
@@ -32,6 +55,20 @@ class TicketCommentForm(ModelForm):
             'comment': forms.Textarea(attrs={'class': 'form-control', 'placeholder': "Leave a comment here", 'id':"comment",'style':"resize: none; height: 200px;"}),
         }
 
+class TicketAttachmentForm(ModelForm):
+    """
+    Form for adding attachments to tickets.
+    """
+    files = MultipleFileField(
+        label='Select files',
+        help_text='Select files to upload.',
+        required=False,
+        widget=MultipleFileInput(attrs={'class': 'form-control', 'multiple': True})
+    )
+    class Meta:
+        model = TicketAttachment
+        fields = ['files']
+
 class HelpTopicForm(ModelForm):
     """
     Form for creating and updating help topics.
@@ -49,7 +86,7 @@ class TasksForm(ModelForm):
     """
     class Meta:
         model = Tasks
-        fields = ['task_name', 'description', 'priority', 'due_date']
+        fields = ['task_name', 'description', 'ticket', 'priority', 'assigned_to', 'due_date']
         widgets = {
             'task_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter the name of the task'}),
             'description': forms.Textarea(
@@ -60,6 +97,25 @@ class TasksForm(ModelForm):
                     'style':"resize: none; height: 200px;"
                 }
             ),
+            'ticket': forms.Select(attrs={'class': 'form-select', 'aria-label': 'Default select example'}),
             'priority': forms.Select(attrs={'class': 'form-select', 'aria-label': 'Default select example'}),
-            'due_date': forms.DateInput(attrs={'type': 'date'}),
+            'assigned_to': forms.Select(attrs={'class': 'form-select', 'aria-label': 'Default select example'}),
+            'due_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control w-50'}),
+        }
+
+class TaskCommentForm(ModelForm):
+    """
+    Form for adding comments to tasks.
+    """
+    class Meta:
+        model = TicketComment
+        fields = ['comment']
+        widgets = {
+            'comment': forms.Textarea(attrs={
+                'class': 'form-control',
+                'placeholder': "Leave a comment here",
+                'id':"comment",
+                'style':"resize: none; height: 200px;"
+                }
+            ),
         }

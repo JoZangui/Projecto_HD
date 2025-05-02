@@ -1,0 +1,54 @@
+{% extends "helpdesk/base.html" %}
+{% block main_content %}
+<div class="container p-4 border border-1 rounded-3 shadow-sm bg-light">
+    <!-- breadcrumb -->
+    <nav style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='currentColor'/%3E%3C/svg%3E&#34;);" aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{% url 'task_list' %}">Lista de Tarefas</a></li>
+          <li class="breadcrumb-item active" aria-current="page">Criar nova Tarefa</li>
+        </ol>
+    </nav>
+    <!-- fim do breadcrumb -->
+    <h1>Criar Nova Tarefa</h1>
+    <p class="text-secondary">Por favor, preencha o formulário abaixo para abrir um novo Ticket.</p>
+    <form method="post" enctype="multipart/form-data">
+        {% if form.errors %}
+            <div class="alert alert-danger" role="alert">
+                <strong>Erro!</strong> Por favor, verifique os erros abaixo.
+            </div>
+        {% endif %}
+        {% if form.non_field_errors %}
+            <div class="alert alert-danger" role="alert">
+                <strong>Erro!</strong> {{ form.non_field_errors.as_text }}
+            </div>
+        {% endif %}
+        {% csrf_token %}
+        <div class="mb-3">
+            <label class="form-label">Nome da Tarefa:</label><br>
+            {{form.task_name}}
+        </div>
+        <div class="mb-3 form-floating">
+            {{form.description}}
+            <label class="text-secondary" for="floatingTextarea2">Descrever</label>
+        </div>
+        <div class="mb-3">
+            <label for="">Associar à um Ticket: </label>
+            {{form.ticket}}
+        </div>
+        <div class="mb-3">
+            <label for="">Defina o Nível de Prioridade da Tarefa: </label>
+            {{form.priority}}
+        </div>
+        <div class="mb-3">
+            <label for="">Atribuir à: </label>
+            {{form.assigned_to}}
+        </div>
+        <div class="mb-3">
+            <label for="">Meta de entrega: </label>
+            {{form.due_date}}
+        </div>
+        <br>
+        <button type="submit" class="btn btn-primary ">Submeter Tarefa</button>
+    </form>
+</div>
+{% endblock %}

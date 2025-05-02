@@ -4,46 +4,57 @@
         <!-- breadcrumb -->
         <nav style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='currentColor'/%3E%3C/svg%3E&#34;);" aria-label="breadcrumb">
             <ol class="breadcrumb">
-              <li class="breadcrumb-item"><a href="{% url 'ticket_list' %}">Lista de Tickets</a></li>
-              <li class="breadcrumb-item active" aria-current="page">Detalhes do Ticket</li>
+              <li class="breadcrumb-item"><a href="{% url 'task_list' %}">Lista de Tarefas</a></li>
+              <li class="breadcrumb-item active" aria-current="page">Detalhes da Tarefa</li>
             </ol>
         </nav>
         <!-- fim do breadcrumb -->
-        <h1 class="fw-bold">Detalhes do Ticket</h1>
+        <h1 class="fw-bold">Tarefa</h1>
         <div class="container-fluid bg-white p-3 rounded-3 shadow-sm mb-4">
             <div class="row px-3">
                 <div class="col-12">
-                    {% if ticket.status == "Aberto"%}
-                        <span class="fw-bold fst-italic text-secondary">Status: <span class="text-primary fs-6" id="status_info">{{ ticket.status }}</span></span>
-                    {% elif ticket.status == "Em Progresso" %}
-                        <span class="fw-bold fst-italic text-secondary">Status: <span class="text-warning fs-6">{{ ticket.status }}</span></span>
+                    {% if task.status == "in_progress"%}
+                        <span class="fw-bold fst-italic text-secondary">Status: <span class="text-primary fs-6" id="status_info">{{ task.status }}</span></span>
+                    {% elif task.status == "not_started" %}
+                        <span class="fw-bold fst-italic text-secondary">Status: <span class="text-warning fs-6">{{ task.status }}</span></span>
                     {% else %}
-                        <span class="fw-bold fst-italic text-secondary">Status: <span class="text-danger fs-6">{{ ticket.status }}</span></span>
+                        <span class="fw-bold fst-italic text-secondary">Status: <span class="text-success fs-6">{{ task.status }}</span></span>
                     {% endif %}
                     <br>
+                    <span class="text-secondary fst-italic"><span class="fw-bold">task Nº:</span> {{ task.id }}</span>
+                    <br>
                     <span class="fw-bold fst-italic text-secondary">Atribuído à:
-                        <span class="fw-normal fs-6">{{ ticket.assigned_to.user.first_name }} {{ ticket.assigned_to.user.last_name }}</span>
+                        <span class="fw-normal fs-6">{{ task.assigned_to.user.first_name }} {{ task.assigned_to.user.last_name }}</span>
                     </span>
                     <br>
-                    <span class="text-secondary fst-italic"><span class="fw-bold">Ticket Nº:</span> {{ ticket.id }}</span>
-                    <br>
-                    <span class="text-secondary fst-italic"><span class="fw-bold">Criado em:</span> {{ticket.created_at}}</span>
+                    <span class="text-secondary fst-italic"><span class="fw-bold">Criado em:</span> {{task.created_at}}</span>
                     <br>
                     <span class="text-secondary fst-italic">
-                        <span class="fw-bold">Criado Por:</span> {{ticket.user}}
+                        <span class="fw-bold">Última actualização:</span> {{task.updated_at}}</span>
+                    <br>
+                    <span class="text-secondary fst-italic">
+                        <span class="fw-bold">Criado Por:</span> {{task.created_by.user.first_name}} {{task.created_by.user.last_name}}
                     </span>
+                    <br>
+                    <span class="text-secondary fst-italic"><span class="fw-bold">Data de entrega:</span> {{task.due_date}}</span>
                     <br>
                     <br>
                     {% if user.agent.privilege_level == 'admin' %}
-                        <a href="{% url 'assign_ticket' ticket.id %}" class="btn btn-sm btn-outline-primary">Editar Atribuição</a>
+                        <a href="{% url 'assign_task' task.id %}" class="btn btn-sm btn-outline-primary">Editar Atribuição</a>
                     {% endif %}
                     
                     <hr>
-                    <h4>Assunto: <span class="fst-italic fw-normal text-secondary">{{ ticket.issue_summary }}</span></h4>
+                    <h4>Assunto: <span class="fst-italic fw-normal text-secondary">{{ task.task_name }}</span></h4>
+                    <h5 class="fst-italic text-secondary">Tarefa referente ao Ticekt: <span class="fw-normal">{{task.ticket.issue_summary}}</span></h5>
                     <br>
                     <p>
-                        {{ticket.description}}
+                        {{task.description}}
                     </p>
+                    {% if user.agent.privilege_level == 'admin' %}
+                        <a href="{% url 'edit_task' task.id %}" class="btn btn-sm btn-outline-primary">Editar Tarefa</a>
+                        &NonBreakingSpace; &NonBreakingSpace; &NonBreakingSpace;
+                        <a href="{% url 'delete_task' task.id %}" class="btn btn-sm btn-outline-danger">Eliminar Tarefa</a>
+                    {% endif %}
                 </div>
                 <!-- comentários -->
                 <div class="col-12">
@@ -59,16 +70,16 @@
                             {% endif %}
                                 <h6>
                                     <i class="bi bi-person-circle"></i> {{comment.user.first_name}} {{comment.user.last_name}}
-                                    {% if comment.user == ticket.assigned_to %}
+                                    {% if comment.user == task.assigned_to %}
                                     <span class="badge bg-secondary text-dark">Atribuído</span>
                                     {% endif %}
-                                    {% if comment.user == ticket.user %}
+                                    {% if comment.user == task.user %}
                                     <span class="badge bg-success text-light">Criador</span>
                                     {% endif %}
-                                    {% if comment.user == ticket.assigned_to and comment.user == ticket.user %}
+                                    {% if comment.user == task.assigned_to and comment.user == task.user %}
                                     <span class="badge bg-warning text-light">Criador e Atribuído</span>
                                     {% endif %}
-                                    {% if comment.user == ticket.assigned_to and comment.user.agent.privilege_level == 'admin' %}
+                                    {% if comment.user == task.assigned_to and comment.user.agent.privilege_level == 'admin' %}
                                     <span class="badge bg-danger text-light">Amin</span>
                                     {% endif %}
                                     {% if comment.user.agent.privilege_level == 'admin' %}
@@ -82,14 +93,14 @@
                                 </div>
                             </div>
                         {% empty %}
-                            <p class="fst-italic text-secondary">Não há comentários disponíveis.</p>
+                            <p class="fst-italic text-secondary">"Não há comentários disponíveis no momento."</p>
                         {% endfor %}
                     </div>
                 </div>
                 <!-- fim de comentários -->
                 <!-- formulário de comentário -->
                 <div class="col-12">
-                    <form action="{% url 'ticket_detail' ticket.id %}" method="POST">
+                    <form action="{% url 'task_detail' task.id %}" method="POST">
                         {% csrf_token %}
                         {% if comment_form.errors %}
                             <div class="alert alert-danger" role="alert">
@@ -106,42 +117,39 @@
                 </div>
                 <!-- fim do formulário de comentários -->
             </div>
-            {% if user.agent.privilege_level == 'admin' %}  
-                <div class="px-3 mt-4">
-                    <hr>
-                    <h5>Alterar Status do Ticket</h5>
-                    <p class="fst-italic text-secondary">Você pode fechar o ticket caso a situação se tenha resolvido.</p>
-                    <div class="w-50">
-                        {% csrf_token %}
-                        <select class="form-select" aria-label="Default select example" name="status" id="status">
-                            <option selected>{{ticket.status}}</option>
-                            <option value="Aberto">Aberto</option>
-                            <option value="Em Progresso">Em Progresso</option>
-                            <option value="Fechado">Fechado</option>
-                        </select>
-                        <br>
-                        <button type="button" class="btn btn-outline-warning" id="change_status_btn">Actualizar do Status</button>
-                    </div>
+            <div class="px-3 mt-4">
+                <hr>
+                <h5>Alterar Status do task</h5>
+                <p class="fst-italic text-secondary">Você pode fechar o task caso a situação se tenha resolvido.</p>
+                <div class="w-50">
+                    {% csrf_token %}
+                    <select class="form-select" aria-label="Default select example" name="status" id="status">
+                        <option selected>{{task.status}}</option>
+                        <option value="not_started">Not Started</option>
+                        <option value="in_progress">In Progress</option>
+                        <option value="completed">Completed</option>
+                    </select>
+                    <br>
+                    <button type="button" class="btn btn-outline-warning" id="change_status_btn">Actualizar do Status</button>
                 </div>
-            {% endif %}
+            </div>
         </div>
     </div>
 {% endblock %}
 
 {% block scripts %}  
     <script>
-        // Script para alterar o status do ticket
+        // Script para alterar o status do task
         let change_status_btn = document.getElementById("change_status_btn");
         let new_status = document.getElementById("status");
 
         const sendData = async (event) => {
             event.preventDefault(); // Impede o envio do formulário padrão
             let status = new_status.value;
-            let ticket_id = "{{ ticket.id }}"; // Obtém o ID do ticket do template
-            const data = {status: status, ticket_id: ticket_id};
+            const data = {status: status};
 
             try {
-                const response = await fetch("{% url 'change_ticket_status' %}", {
+                const response = await fetch("{% url 'change_task_status' task.id %}", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -152,7 +160,7 @@
                 if (response.ok) {
                     location.reload(); // Recarrega a página para ver as alterações
                 } else {
-                    alert("Erro ao alterar o status do ticket.");
+                    alert("Erro ao alterar o status do task.");
                 }
             } catch (error) {
                 console.error("Erro:", error);
@@ -160,6 +168,6 @@
         };
 
         change_status_btn.addEventListener("click", sendData);
-        // Fim do Script para alterar o status do ticket
+        // Fim do Script para alterar o status do task
     </script>
 {% endblock %}

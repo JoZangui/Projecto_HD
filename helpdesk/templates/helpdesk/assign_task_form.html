@@ -1,0 +1,30 @@
+{% extends "helpdesk/base.html" %}
+{% block main_content %}
+<div class="container p-4 border border-1 rounded-3 shadow-sm bg-light">
+    <!-- breadcrumb -->
+    <nav style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='currentColor'/%3E%3C/svg%3E&#34;);" aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{% url 'task_list' %}">Lista de Tarefas</a></li>
+          <li class="breadcrumb-item"><a href="{% url 'task_detail' task_id %}">Detalhes da Tarefa</a></li>
+          <li class="breadcrumb-item active" aria-current="page">Atribuir Tarefa</li>
+        </ol>
+    </nav>
+    <!-- fim do breadcrumb -->
+    <h1 class="fw-bold">Atribuir Tarefa {{task_id}}</h1>
+    <p class="text-secondary">Por favor, preencha o formulário atribuir o task à uma agente.</p>
+    <div class="container-fluid bg-white p-3 rounded-3 shadow-sm mb-4">
+        <form action="{% url 'assign_task' task_id %}" method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+               <select name="agent_id" id="agent_id" class="form-select" aria-label="Default select example">
+                   {% for agent in agents %}
+                        <option value="{{agent.id}}">{{agent.user.first_name}} {{agent.user.last_name}}</option>
+                   {% endfor %}
+               </select>
+            </div>
+            <br>
+            <button type="submit" class="btn btn-primary w-100">Submit</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

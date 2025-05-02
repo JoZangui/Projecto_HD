@@ -1,3 +1,5 @@
+import datetime
+
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
@@ -41,7 +43,7 @@ class Ticket(models.Model):
     ], default='open')  # e.g., open, in_progress, closed
 
     def __str__(self):
-        return f'Ticket: {self.issue_summary}; Criado por: {self.user.username}'
+        return f'{self.issue_summary}; Criado por: {self.user.username}'
 
     class Meta:
         verbose_name_plural = "Tickets" # Plural name for the model in admin interface
@@ -87,7 +89,7 @@ class Tasks(models.Model):
     task_name = models.CharField(max_length=100, null=True, blank=True)
     assigned_to = models.ForeignKey(Agents, null=True, blank=True, related_name='assigned_tasks', on_delete=models.SET_NULL)
     description = models.TextField()
-    due_date = models.DateTimeField(null=True, blank=True)
+    due_date = models.DateField(null=True, blank=True)
     status = models.CharField(max_length=20, choices=[
         ('not_started', 'Not Started'),
         ('in_progress', 'In Progress'),
@@ -100,13 +102,9 @@ class Tasks(models.Model):
         ('urgent', 'Urgent')
     ], default='medium')
     task_atachments = models.ManyToManyField(TicketAttachment, blank=True, related_name='task_attachments')
+    created_by = models.ForeignKey(Agents, on_delete=models.CASCADE, related_name='created_tickets', default=1)
     created_at = models.DateTimeField(default=timezone.now)
-    updated_at = models.DateTimeField(default=timezone.now)
-    task_status = models.CharField(max_length=20, choices=[
-        ('not_started', 'Not Started'),
-        ('in_progress', 'In Progress'),
-        ('completed', 'Completed')
-    ], default='not_started')
+    updated_at = models.DateTimeField(auto_now=timezone.now)
 
     def __str__(self):
         return f"Task for {self.ticket.issue_summary}"
@@ -118,8 +116,8 @@ class Tasks(models.Model):
         """
         Custom validation to ensure the due date is not in the past.
         """
-        if self.due_date and self.due_date < timezone.now():
-            raise ValidationError("Due date cannot be in the past.")
+        if self.due_date and self.due_date < datetime.date.today():
+            raise ValidationError("Data de entrega não pode estar no passado.")
 
 
 class TaskAttachment(models.Model):

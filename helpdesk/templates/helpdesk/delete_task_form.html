@@ -1,0 +1,29 @@
+{% extends "helpdesk/base.html" %}
+{% block main_content %}
+  <div class="container p-4 border border-1 rounded-3 shadow-sm bg-light">
+    <!-- breadcrumb -->
+    <nav style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='currentColor'/%3E%3C/svg%3E&#34;);" aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'task_list' %}">Lista de Tarefas</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'task_detail' task.id %}">Tarefa</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Eliminar Tarefa</li>
+        </ol>
+    </nav>
+    <!-- fim do breadcrumb -->
+    <h1>Eliminar Tarefa</h1>
+    <div class="py-3">
+        <strong class="fs-5 fst-italic text-secondary">"{{task.task_name}}"</strong>
+    </div>
+    <div class="alert alert-danger mb-4" role="alert">
+        <p class="text-secondary">Tem a certeza que deseja eliminar essa tarefa?.</p>
+        <strong>Atenção!</strong> Esta ação não pode ser desfeita. A tarefa será eliminada permanentemente.
+    </div>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-outline-danger">Eliminar</button>
+        &NonBreakingSpace; &NonBreakingSpace; &NonBreakingSpace;
+        <a href="{% url 'task_detail' task.id %}" class="btn btn-success">Cancelar</a>
+    </form>
+
+  </div>
+{% endblock %}

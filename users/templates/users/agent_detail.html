@@ -10,47 +10,51 @@
             </ol>
         </nav>
         <!-- fim do breadcrumb -->
-        <div class="row">
-            <h1 class="fw-bold">Detalhes do Agente</h1>
-            <div class="col-md-6">
-                <h4>{{ agent.user.first_name }} {{ agent.user.last_name }} <small><span class="badge bg-secondary text-light">{{ agent.privilege_level }}</span></small></h4>
-                <p><strong>Email:</strong> {{ agent.user.email }}</p>
-                <p><strong>Nível de Privilégios:</strong> {{ agent.privilege_level }}</p>
-            </div>
-            <div class="col-md-6 text-end">
-                <a href="{% url 'agent_update' agent.id %}" class="btn btn-primary">Editar Agente</a>
-            </div>
-        </div>
-        <hr>
-        <h4 class="fw-bold fs-5">Tickets Atribuídos:</h4>
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Ticket ID</th>
-                    <th>Assunto</th>
-                    <th>Status</th>
-                    <th>Data de criação</th>
-                    <th>Data de entrega</th>
-                    <th>Detalhes</th>
-                </tr>
-            </thead>
-            <a href="{% url 'ticket_list' %}" class="btn btn-sm btn-outline-primary mb-3">Atribuir Ticket</a>
-            <tbody>
-                {% for ticket in agent.assigned_tickets.all %}
+         <div class="container bg-white p-3 rounded-3 shadow-sm mb-4">
+             <div class="row">
+                 <h1 class="fw-bold">Detalhes do Agente</h1>
+                 <div class="col-md-6">
+                     <h4>{{ agent.user.first_name }} {{ agent.user.last_name }} <small><span class="badge bg-secondary text-light">{{ agent.privilege_level }}</span></small></h4>
+                     <p><strong>Email:</strong> {{ agent.user.email }}</p>
+                     <p><strong>Nível de Privilégios:</strong> {{ agent.privilege_level }}</p>
+                 </div>
+                 <div class="col-md-6 text-end">
+                     <a href="{% url 'agent_update' agent.id %}" class="btn btn-primary">Editar Agente</a>
+                 </div>
+             </div>
+         </div>
+         <div class="p-3">
+             <h4 class="fw-bold fs-5">Tickets Atribuídos:</h4>
+             <hr>
+            <table class="table table-striped">
+                <thead>
                     <tr>
-                        <td>{{ ticket.id }}</td>
-                        <td>{{ ticket.issue_summary }}</td>
-                        <td>{{ ticket.status }}</td>
-                        <td>{{ ticket.created_at }}</td>
-                        <td>{{ ticket.due_date }}</td>
-                        <td><a href="{% url 'ticket_detail' ticket.id %}" class="btn btn-sm btn-outline-info">Ver Detalhes</a></td>
+                        <th>Ticket ID</th>
+                        <th>Assunto</th>
+                        <th>Status</th>
+                        <th>Data de criação</th>
+                        <th>Data de entrega</th>
+                        <th>Detalhes</th>
                     </tr>
-                {% empty %}
-                    <tr class="text-center">
-                        <td colspan="6">Nenhum ticket atribuído.</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                </thead>
+                <a href="{% url 'ticket_list' %}" class="btn btn-sm btn-outline-primary mb-3">Atribuir Ticket</a>
+                <tbody>
+                    {% for ticket in agent.assigned_tickets.all %}
+                        <tr>
+                            <td>{{ ticket.id }}</td>
+                            <td>{{ ticket.issue_summary }}</td>
+                            <td>{{ ticket.status }}</td>
+                            <td>{{ ticket.created_at }}</td>
+                            <td>{{ ticket.due_date }}</td>
+                            <td><a href="{% url 'ticket_detail' ticket.id %}" class="btn btn-sm btn-outline-info">Ver Detalhes</a></td>
+                        </tr>
+                    {% empty %}
+                        <tr class="text-center">
+                            <td colspan="6">Nenhum ticket atribuído.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 {% endblock %}

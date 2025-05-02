@@ -7,6 +7,8 @@ urlpatterns = [
     path('', views.index, name='index'),
     # admin page do helpdesk
     path('admin_page/', views.admin_page, name='admin_page'),
+
+    # ---------- Tickets urls ----------
     # lista de tickets
     path('ticket_list/', views.ticket_list, name='ticket_list'),
     # para criar um novo ticket
@@ -27,5 +29,20 @@ urlpatterns = [
     path('ticket/<int:ticket_id>/delete/', views.delete_ticket, name='delete_ticket'),
     # task list
     path('task_list/', views.task_list, name='task_list'),
+
+    # ---------- Tasks urls ----------
     # criar nova tarefa
+    path('task/new/', views.create_new_task, name='create_new_task'),
+    # detalhes da tarefa
+    path('task/<int:task_id>/', views.task_detail, name='task_detail'),
+    # editar tarefa
+    path('task/<int:task_id>/edit/', views.edit_task, name='edit_task'),
+    # deletar tarefa
+    path('task/<int:task_id>/delete/', views.delete_task, name='delete_task'),
+    # adicionar comentario ao tarefa
+    path('task/<int:task_id>/comment/', views.create_task_comment, name='create_task_comment'),
+    # atribuir tarefa a um agente
+    path('task/<int:task_id>/assign/', views.assign_task, name='assign_task'),
+    # mudar o estado da tarefa
+    path('task/<int:task_id>/change_status/', views.change_task_status, name='change_task_status'),
 ]

@@ -4,13 +4,13 @@
         <h1 class="fw-bold">Lista de tasks</h1>
         <div class="container-fluid bg-white p-3 rounded-3 shadow-sm mb-4">
             <p>
-                Aqui está a lista de tasks criadas. Você pode visualizar o status e as respostas de cada task.
+                Aqui está a lista de tarefas criadas. Você pode visualizar o status e as respostas de cada tarefa.
             </p>
         </div>
 
-        {% if user.agent.privilege_level == 'Admin' %}  
+        {% if user.agent.privilege_level == 'admin' %}  
             <div class="d-flex justify-content-left mt-4">
-                <a href="{% url 'create_help_topic' %}" class="btn btn-sm btn-outline-primary">Adicionar Nova Tarefa</a>
+                <a href="{% url 'create_new_task' %}" class="btn btn-sm btn-outline-primary">Criar Nova Tarefa</a>
             </div>
         {% endif %}
 
@@ -19,12 +19,12 @@
         <table class="table table-striped">
             <thead>
                 <tr>
-                    <th>ID do Task</th>
+                    <th>ID</th>
                     <th>Assunto</th>
-                    <th>Status do Task</th>
+                    <th>Status</th>
                     <th>Atribuido</th>
-                    <th>Criado em:</th>
-                    <th>Detalhes</th>
+                    <th>Criado em</th>
+                    <th>Ver Tarefa</th>
                 </tr>
             </thead>
             <tbody>
@@ -32,13 +32,14 @@
                     <tr>
                         <td>{{ task.id }}</td>
                         <td>{{ task.task_name }}</td>
+                        <td>{{ task.status }}</td>
                         <td>{{ task.assigned_to.user.first_name }} {{ task.assigned_to.user.last_name }}</td>
                         <td>{{ task.created_at }}</td>
-                        <td><a href="{% url 'task_detail' task.id %}" class="btn btn-sm btn-outline-info">Ver Detalhes</a></td>
+                        <td><a href="{% url 'task_detail' task.id %}" class="btn btn-sm btn-outline-info">Ver Tarefa</a></td>
                     </tr>
                 {% empty %}
                     <tr class="text-center">
-                        <td colspan="6">Nenhum tarefa encontrada encontrado.</td>
+                        <td colspan="6">Nenhuma tarefa encontrada no momento.</td>
                     </tr>
                 {% endfor %}
             </tbody>

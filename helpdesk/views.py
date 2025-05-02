@@ -7,8 +7,8 @@ from django.http import HttpResponseRedirect, Http404
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import JsonResponse
 
-from .models import Ticket, HelpTopic, TicketComment, TicketAttachment, Tasks
-from .forms import TicketForm, HelpTopicForm, TicketCommentForm #, TicketAttachmentForm
+from .models import Ticket, HelpTopic, TicketComment, TicketAttachment, Tasks, TaskComments
+from .forms import TicketForm, HelpTopicForm, TicketCommentForm, TicketAttachmentForm, TasksForm, TaskCommentForm
 from users.models import Agents
 
 # Create your views here.
@@ -29,6 +29,7 @@ def admin_page(request):
     tickets = Ticket.objects.all()
     return render(request, 'helpdesk/admin_page.html', {'help_topics': help_topics, 'tickets': tickets})
 
+# Ticket views
 @login_required
 def ticket_list(request):
     """ List all tickets """
@@ -137,7 +138,7 @@ def change_ticket_status(request):
         return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=400)
 
 @login_required
-@user_passes_test(lambda u: u.is_superuser or u.agent.privilege_level == 'admin')
+@user_passes_test(lambda u: u.agent.privilege_level == 'admin')
 def assign_ticket(request, ticket_id):
     """ Assign a ticket to an agent """
     # This function would typically handle assigning a ticket to an agent
@@ -192,10 +193,190 @@ def create_help_topic(request):
         form = HelpTopicForm()
     return render(request, 'helpdesk/new_help_topic_form.html', {'form': form})
 
+# Fim de ticket views
+
+# Task views
+@login_required
 def task_list(request):
     """ List all tasks """
-    # This function would typically handle listing all tasks
-    # For now, we'll just return a dummy response
-    tasks = Tasks.objects.all()
+    user_is_staff_member = Agents.objects.filter(user=request.user).values_list('privilege_level', flat=True)
+
+    if not user_is_staff_member:
+        return HttpResponse('Você não tem permissão para acessar essa página', status=403)
+
+    if request.user.agent.privilege_level == 'admin':
+        tasks = Tasks.objects.all()
+    else:
+        tasks = Tasks.objects.all().filter(assigned_to=request.user.agent)
     # You might want to add pagination or filtering here
     return render(request, 'helpdesk/task_list.html', {'tasks': tasks})
+
+@login_required
+@user_passes_test(lambda u: u.agent.privilege_level == 'admin')
+def create_new_task(request):
+    """ Create a new task """
+    logger = logging.getLogger(__name__)
+    
+    if request.method == 'POST':
+        form = TasksForm(request.POST)
+        if form.is_valid():
+            task = form.save(commit=False)
+            agent = Agents.objects.get(user=request.user)
+            task.created_by = agent
+            logger.info(f'Task created: {task.task_name} by {request.user.username}')
+            # Here you would typically send an email notification or perform other actions
+            return HttpResponseRedirect(reverse(
+                'task_detail',
+                kwargs={'task_id': task.id}
+            ))  # Redirect to task detail page after saving
+    else:
+        form = TasksForm()
+    return render(request, 'helpdesk/new_task_form.html', {'form': form})
+
+@login_required
+def task_detail(request, task_id):
+    """ View task details """
+    user_is_staff_member = Agents.objects.filter(user=request.user).values_list('privilege_level', flat=True)
+    if not user_is_staff_member:
+        return HttpResponse('Você não tem permissão para acessar essa página', status=403)
+
+    try:
+        task = Tasks.objects.get(id=task_id)
+        comments = TaskComments.objects.filter(task=task)
+    except Tasks.DoesNotExist:
+        return HttpResponse('Task not found', status=404)
+
+    if request.method == 'POST':
+        comment_form = TicketCommentForm(request.POST)
+        if comment_form.is_valid():
+            comment = comment_form.save(commit=False)
+            comment.task = task
+            comment.user = request.user  # Assuming the user is logged in
+            comment.save()
+            return HttpResponseRedirect(f'/task/{task_id}/')  # Redirect to the same task detail page after saving
+    else:
+        comment_form = TicketCommentForm()
+
+    return render(request, 'helpdesk/task_detail.html', {'task': task, 'comments': comments, 'comment_form': comment_form})
+
+def delete_task(request, task_id):
+    """ Delete a task """
+    # This function would typically handle deleting a task
+    # For now, we'll just return a dummy response
+    task = Tasks.objects.get(id=task_id)
+    if not task:
+        return HttpResponse('Task not found', status=404)
+
+    if request.method == 'POST':
+        task = Tasks.objects.get(id=task_id)
+        task.delete()
+        return HttpResponseRedirect(reverse('task_list'))  # Redirect to task list page after deleting
+    else:
+        return render(request, 'helpdesk/delete_task_form.html', {'task': task})
+
+def edit_task(request, task_id):
+    """ update task """
+    logger = logging.getLogger(__name__)
+    task = Tasks.objects.get(id=task_id)
+    if request.method == 'POST':
+        form = TasksForm(request.POST, instance=task)
+        if form.is_valid():
+            task_form = form.save(commit=False)
+            agent = Agents.objects.get(user=request.user)
+            task_form.created_by = agent
+            task_form.save()
+            # Log the task update
+            logger.info(f'Task created: {task_form.task_name} by {request.user.username}')
+            # Here you would typically send an email notification or perform other actions
+            return HttpResponseRedirect(reverse(
+                'task_detail',
+                kwargs={'task_id': task_form.id}
+            ))  # Redirect to task detail page after saving
+    else:
+        form = TasksForm(instance=task)  # Assuming the task exists
+    return render(request, 'helpdesk/update_task_form.html', {'form': form, 'task': task})
+
+@login_required
+def create_task_comment(request, task_id):
+    """ Create a new task comment """
+    logger = logging.getLogger(__name__)
+
+    user_is_staff_member = Agents.objects.filter(user=request.user).values_list('privilege_level', flat=True)
+    if not user_is_staff_member:
+        return HttpResponse('Você não tem permissão para acessar essa página', status=403)
+
+    if request.method == 'POST':
+        form = TaskCommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.task = Tasks.objects.get(id=task_id)  # Assuming the task exists
+            comment.user = request.user  # Assuming the user is logged in
+            comment.save()
+            logger.info(f'Task comment created: {comment.comment} by {request.user.username}')
+            return HttpResponseRedirect(reverse(
+                'task_detail',
+                kwargs={'task_id': task_id}
+            ))  # Redirect to task detail page after saving
+    else:
+        form = TaskCommentForm()
+    return render(request, 'helpdesk/new_task_comment_form.html', {'form': form})
+
+def assign_task(request, task_id):
+    """ Assign a task to an agent """
+    # This function would typically handle assigning a task to an agent
+    # For now, we'll just return a dummy response
+    if request.method == 'POST':
+        try:
+            agent_id = request.POST.get('agent_id')
+            # Assuming you have a way to assign tasks to agents
+            if agent_id == 'success':
+                return JsonResponse({'status': 'success'})
+            elif agent_id == 'error':
+                return JsonResponse({'status': 'error', 'message': 'Error assigning task'}, status=400)
+            
+            agent = Agents.objects.get(id=agent_id)  # Assuming you have an Agent model
+
+            task = Tasks.objects.get(id=task_id)
+            task.assigned_to = agent  # Assuming 'assigned_to' is a field in your Task model
+            task.save()
+            
+            # Log the assignment
+            logger = logging.getLogger(__name__)
+            logger.info(f'Task {task_id} assigned to agent {agent_id} by {request.user.username}')
+            
+            return HttpResponseRedirect(reverse(
+                'task_detail',
+                kwargs={'task_id': task.id}
+            ))  # Redirect to task detail page after saving
+        except json.JSONDecodeError:
+            return JsonResponse({'status': 'error', 'message': 'Invalid JSON data'}, status=400)
+    else:
+        # Assuming you have an Agent model and a way to get all agents
+        return render(request, 'helpdesk/assign_task_form.html', {'agents': Agents.objects.all(), 'task_id': task_id})
+
+def change_task_status(request, task_id):
+    """ Change the status of a task """
+    # This function would typically handle changing the status of a task
+    # For now, we'll just return a dummy response
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            task_id = task_id
+            new_status = data.get('status')
+
+            # Validate the task ID and new status here
+            if not task_id or not new_status:
+                return JsonResponse({'status': 'error', 'message': 'Invalid task ID or status'}, status=400)
+
+            task = Tasks.objects.get(id=task_id)
+            task.status = new_status  # Assuming 'status' is a field in your Task model
+            task.save()
+            # Log the status change
+            logger = logging.getLogger(__name__)
+            logger.info(f'Task {task_id} status changed to {new_status} by {request.user.username}')
+            
+            return JsonResponse({'status': new_status})
+        except json.JSONDecodeError:
+            return JsonResponse({'status': 'error', 'message': 'Invalid JSON data'}, status=400)
+    else:
+        return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=400)
