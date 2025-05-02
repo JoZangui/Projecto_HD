@@ -138,7 +138,7 @@ def change_ticket_status(request):
         return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=400)
 
 @login_required
-@user_passes_test(lambda u: u.agent.privilege_level == 'admin')
+@user_passes_test(lambda user: user.agent.privilege_level == 'admin')
 def assign_ticket(request, ticket_id):
     """ Assign a ticket to an agent """
     # This function would typically handle assigning a ticket to an agent
@@ -181,7 +181,7 @@ def delete_ticket(request, ticket_id):
     pass
 
 @login_required
-@user_passes_test(lambda u: u.agent.privilege_level == 'admin')
+@user_passes_test(lambda user: user.agent.privilege_level == 'admin')
 def create_help_topic(request):
     """ Create a new help topic """
     if request.method == 'POST':
@@ -212,7 +212,7 @@ def task_list(request):
     return render(request, 'helpdesk/task_list.html', {'tasks': tasks})
 
 @login_required
-@user_passes_test(lambda u: u.agent.privilege_level == 'admin')
+@user_passes_test(lambda user: user.agent.privilege_level == 'admin')
 def create_new_task(request):
     """ Create a new task """
     logger = logging.getLogger(__name__)
@@ -259,6 +259,8 @@ def task_detail(request, task_id):
 
     return render(request, 'helpdesk/task_detail.html', {'task': task, 'comments': comments, 'comment_form': comment_form})
 
+@login_required
+@user_passes_test(lambda user: user.agent.privilege_level == 'admin')
 def delete_task(request, task_id):
     """ Delete a task """
     # This function would typically handle deleting a task
@@ -274,6 +276,8 @@ def delete_task(request, task_id):
     else:
         return render(request, 'helpdesk/delete_task_form.html', {'task': task})
 
+@login_required
+@user_passes_test(lambda user: user.agent.privilege_level == 'admin')
 def edit_task(request, task_id):
     """ update task """
     logger = logging.getLogger(__name__)
