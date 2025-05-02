@@ -5,4 +5,5 @@ admin.site.register(HelpTopic)
 admin.site.register(Ticket)
 admin.site.register(TicketComment)
 admin.site.register(TicketAttachment)
+admin.site.register(Tasks)
 # Register your models here.

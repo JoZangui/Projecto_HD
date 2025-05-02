@@ -7,12 +7,19 @@ from django.http import HttpResponseRedirect, Http404
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import JsonResponse
 
-from .models import Ticket, HelpTopic, TicketComment #, TicketAttachment
+from .models import Ticket, HelpTopic, TicketComment, TicketAttachment, Tasks
 from .forms import TicketForm, HelpTopicForm, TicketCommentForm #, TicketAttachmentForm
 from users.models import Agents
 
 # Create your views here.
 def index(request):
+    """ Index page for helpdesk """
+    # This is the landing page for the helpdesk application
+    if request.user.is_authenticated:
+        user_is_staff_member = Agents.objects.filter(user=request.user).values_list('privilege_level', flat=True)
+        if user_is_staff_member.exists():
+            # Check if the user is a staff member and redirect to the admin page:
+            return redirect('admin_page')
     return render(request, 'helpdesk/index.html')
 
 @login_required
@@ -184,3 +191,11 @@ def create_help_topic(request):
     else:
         form = HelpTopicForm()
     return render(request, 'helpdesk/new_help_topic_form.html', {'form': form})
+
+def task_list(request):
+    """ List all tasks """
+    # This function would typically handle listing all tasks
+    # For now, we'll just return a dummy response
+    tasks = Tasks.objects.all()
+    # You might want to add pagination or filtering here
+    return render(request, 'helpdesk/task_list.html', {'tasks': tasks})

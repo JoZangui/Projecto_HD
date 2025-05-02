@@ -25,4 +25,7 @@ urlpatterns = [
     path('ticket/<int:ticket_id>/edit/', views.edit_ticket, name='edit_ticket'),
     # deletar ticket
     path('ticket/<int:ticket_id>/delete/', views.delete_ticket, name='delete_ticket'),
+    # task list
+    path('task_list/', views.task_list, name='task_list'),
+    # criar nova tarefa
 ]

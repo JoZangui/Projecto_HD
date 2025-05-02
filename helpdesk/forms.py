@@ -1,7 +1,7 @@
 from django import forms
 from django.forms import ModelForm
 
-from .models import Ticket, HelpTopic, TicketComment, TicketAttachment
+from .models import Ticket, HelpTopic, TicketComment, TicketAttachment, Tasks, Agents
 
 class TicketForm(ModelForm):
     """
@@ -43,14 +43,23 @@ class HelpTopicForm(ModelForm):
             'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter the name of the help topic'}),
         }
 
-class PriorityForm(forms.Form):
+class TasksForm(ModelForm):
     """
-    Form for selecting ticket priority.
+    Form for creating and updating tasks.
     """
-    PRIORITY_CHOICES = [
-        ('low', 'Low'),
-        ('medium', 'Medium'),
-        ('high', 'High'),
-        ('urgent', 'Urgent')
-    ]
-    priority = forms.ChoiceField(choices=PRIORITY_CHOICES, widget=forms.Select(attrs={'class': 'form-select'}))
+    class Meta:
+        model = Tasks
+        fields = ['task_name', 'description', 'priority', 'due_date']
+        widgets = {
+            'task_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter the name of the task'}),
+            'description': forms.Textarea(
+                attrs={
+                    'class': 'form-control',
+                    'placeholder': "Leave a comment here",
+                    'id':"comment",
+                    'style':"resize: none; height: 200px;"
+                }
+            ),
+            'priority': forms.Select(attrs={'class': 'form-select', 'aria-label': 'Default select example'}),
+            'due_date': forms.DateInput(attrs={'type': 'date'}),
+        }
