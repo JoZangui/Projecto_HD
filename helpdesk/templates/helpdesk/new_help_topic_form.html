@@ -11,6 +11,7 @@
     <!-- fim do breadcrumb -->
     <h1 class="fw-bold">Adicionar Novo Tópico</h1>
     <p class="text-secondary">Por favor, preencha o formulário abaixo para adicionar um novo tópico.</p>
+    <hr>
     <form method="post" action="{% url 'create_help_topic' %}">
         {% csrf_token %}
         <div class="mb-3">

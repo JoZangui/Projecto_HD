@@ -1,13 +1,11 @@
 {% extends "helpdesk/base.html" %}
 {% block main_content %}
     <div class="container p-4 bg bg-1 rounded-3 shadow-sm bg-light">
-        <h1 class="fw-bold">Lista de tasks</h1>
-        <div class="container-fluid bg-white p-3 rounded-3 shadow-sm mb-4">
-            <p>
-                Aqui está a lista de tarefas criadas. Você pode visualizar o status e as respostas de cada tarefa.
-            </p>
-        </div>
-
+        <h1 class="fw-bold">Lista de Tarefas</h1>
+        <p class="text-secondary">
+            Aqui está a lista de tarefas criadas. Você pode visualizar o status e as respostas de cada tarefa.
+        </p>
+        <hr>
         {% if user.agent.privilege_level == 'admin' %}  
             <div class="d-flex justify-content-left mt-4">
                 <a href="{% url 'create_new_task' %}" class="btn btn-sm btn-outline-primary">Criar Nova Tarefa</a>

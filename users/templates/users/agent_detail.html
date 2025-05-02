@@ -13,12 +13,12 @@
          <div class="container bg-white p-3 rounded-3 shadow-sm mb-4">
              <div class="row">
                  <h1 class="fw-bold">Detalhes do Agente</h1>
-                 <div class="col-md-6">
+                 <div class="col-md-12">
                      <h4>{{ agent.user.first_name }} {{ agent.user.last_name }} <small><span class="badge bg-secondary text-light">{{ agent.privilege_level }}</span></small></h4>
                      <p><strong>Email:</strong> {{ agent.user.email }}</p>
                      <p><strong>Nível de Privilégios:</strong> {{ agent.privilege_level }}</p>
                  </div>
-                 <div class="col-md-6 text-end">
+                 <div class="col-md-12 text-start">
                      <a href="{% url 'agent_update' agent.id %}" class="btn btn-primary">Editar Agente</a>
                  </div>
              </div>

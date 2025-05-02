@@ -12,12 +12,11 @@
     <!-- fim do breadcrumb -->
     <h1 class="fw-bold">Editar Agente</h1>
     <h6 class="text-secondary">Info do Agente:</h6>
-    <div class="container px-4 py-2 border border-1 rounded-3 shadow-sm bg-light">
-        <h6 class="fw-bold text-secondary">Agente:</h6>
-        <h6 class="fw-bold">
-            {{agent.user.email}} <small><span class="badge bg-secondary text-light">{{ agent.privilege_level }}</span></small>
-        </h6>
-    </div>
+    <h6 class="fw-normal text-secondary">Nome: {{agent.user.first_name}} {{agent.user.last_name}}</h6>
+    <h6 class="fw-normal">
+        Email: {{agent.user.email}} <small><span class="badge bg-secondary text-light">{{ agent.privilege_level }}</span></small>
+    </h6>
+    <hr>
     <br>
     <form method="post" action="{% url 'agent_registration' %}">
         {% csrf_token %}

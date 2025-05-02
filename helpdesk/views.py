@@ -223,6 +223,7 @@ def create_new_task(request):
             task = form.save(commit=False)
             agent = Agents.objects.get(user=request.user)
             task.created_by = agent
+            task.save()
             logger.info(f'Task created: {task.task_name} by {request.user.username}')
             # Here you would typically send an email notification or perform other actions
             return HttpResponseRedirect(reverse(
