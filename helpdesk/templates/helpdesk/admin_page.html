@@ -4,9 +4,7 @@
         <h1 class="mt-4">Admin Page</h1>
         <p class="text-secondary">Welcome to the admin page. Here you can manage users and tickets.</p>
         <div class="container-fluid d-flex justify-content-center bg-white p-3 rounded-3 shadow-sm mb-4" style="height: 450px;">
-            <p class="align-self-center text-center text-secondary">
-                Sem informações no momento
-            </p>
+            <canvas id="myChart"></canvas>
         </div>
         <!-- Actividades recentes -->
         <!-- Adicionar aqui as actividades obtidas por meio dos logs -->
@@ -58,3 +56,17 @@
         </table>
     </div>
 {% endblock main_content %}
+{% block scripts %}
+    <script>
+        fetch("{% url 'chart-data' %}")
+        .then(response => response.json())
+        .then(data => {
+            const ctx = document.getElementById("myChart").getContext("2d");
+            new Chart(ctx, {
+                type: "bar",
+                data: data
+            });
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}

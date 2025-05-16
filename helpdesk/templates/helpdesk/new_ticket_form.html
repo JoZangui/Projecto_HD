@@ -6,17 +6,17 @@
     <form method="post">
         {% csrf_token %}
         <div class="mb-3">
-            <label for="exampleInputPassword1" class="form-label">Help Topic:</label><br>
+            <label for="exampleInputPassword1" class="form-label">Tópico do Problema:</label><br>
             {{form.help_topic}}
         </div>
         <hr>
         <div class="mb-3">
-            <label for="">Detalhes Ticket: </label>
+            <label for="">Detalhes do Ticket: </label>
             <br>
             <label for="" class="text-secondary">Por favor descreva o seu problema</label>
             <br>
             <br>
-            <label for="">Resumo do problema:</label>
+            <label for="">Assunto:</label>
             {{form.issue_summary}}
         </div>
         <div class="form-floating">

@@ -6,4 +6,5 @@ admin.site.register(Ticket)
 admin.site.register(TicketComment)
 admin.site.register(TicketAttachment)
 admin.site.register(Tasks)
-# Register your models here.
+admin.site.register(TicketActivityLog)
+admin.site.register(TaskActivityLog)

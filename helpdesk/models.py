@@ -85,9 +85,9 @@ class Tasks(models.Model):
     """
     Model representing a task related to a support ticket.
     """
-    ticket = models.ForeignKey(Ticket, related_name='tasks', on_delete=models.CASCADE)
+    ticket = models.ForeignKey(Ticket, related_name='tasks', on_delete=models.CASCADE, null=True, blank=True)
     task_name = models.CharField(max_length=100, null=True, blank=True)
-    assigned_to = models.ForeignKey(Agents, null=True, blank=True, related_name='assigned_tasks', on_delete=models.SET_NULL)
+    assigned_to = models.ManyToManyField(Agents, blank=True, related_name='assigned_tasks')
     description = models.TextField()
     due_date = models.DateField(null=True, blank=True)
     status = models.CharField(max_length=20, choices=[
@@ -149,70 +149,25 @@ class TaskComments(models.Model):
     class Meta:
         verbose_name_plural = "Comentarios de Tarefas"
 
-# Avaliar mais tarde
-class TasksHistory(models.Model):
-    """
-    Model representing the history of tasks related to a support ticket.
-    """
-    task = models.ForeignKey(Tasks, related_name='history', on_delete=models.CASCADE)
-    status = models.CharField(max_length=20, choices=[
-        ('not_started', 'Not Started'),
-        ('in_progress', 'In Progress'),
-        ('completed', 'Completed')
-    ])
-    changed_at = models.DateTimeField(auto_now_add=True)
+# Logs para tarefas e tickets
+class TicketActivityLog(models.Model):
+    ticket = models.CharField(verbose_name='Ticket')
+    user = models.CharField(verbose_name='Nome do Usuário')
+    info = models.CharField(verbose_name='Actividade')
+    register_Date = models.DateTimeField(default=timezone.now, verbose_name='Data do Registro')
+
+    class Meta:
+        verbose_name_plural = "Logs de Actividades dos Ticket"
+
+
+class TaskActivityLog(models.Model):
+    task = models.CharField(verbose_name='Tarefa')
+    user = models.CharField(verbose_name='Nome do Usuário')
+    info = models.CharField(verbose_name='Actividade')
+    register_date = models.DateTimeField(default=timezone.now, verbose_name='Data do Registo')
 
     def __str__(self):
-        return f"Task history for {self.task.ticket.issue_summary} to {self.status} at {self.changed_at}"
-    
+        return f'{self.info}: {self.task} às {self.register_date}'
+
     class Meta:
-        verbose_name_plural = "Historico de Tarefas"
-
-class TicketStatusHistory(models.Model):
-    """
-    Model representing the history of status changes for a support ticket.
-    """
-    ticket = models.ForeignKey(Ticket, related_name='status_history', on_delete=models.CASCADE)
-    status = models.CharField(max_length=20, choices=[
-        ('aberto', 'Aberto'),
-        ('em_progresso', 'Em Progresso'),
-        ('fechado', 'Fechado')
-    ])
-    changed_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f"Status change for {self.ticket.issue_summary} to {self.status} at {self.changed_at}"
-    
-    class Meta:
-        verbose_name_plural = "Historico de Status de Tickets"
-
-        ordering = ['-changed_at']
-        # Orders the history by the most recent change first
-        # This is useful for displaying the history in reverse chronological order.
-        # You can also add unique constraints or other Meta options as needed.
-        # For example, you might want to ensure that each ticket can only have one status change at a time.
-        # This ensures that the combination of ticket and changed_at is unique, preventing duplicate entries.
-        # You can also add indexes for faster querying if needed.
-        unique_together = ('ticket', 'changed_at')
-
-class TicketPriorityHistory(models.Model):
-    """
-    Model representing the history of priority changes for a support ticket.
-    """
-    ticket = models.ForeignKey(Ticket, related_name='priority_history', on_delete=models.CASCADE)
-    priority = models.CharField(max_length=20, choices=[
-        ('low', 'Low'),
-        ('medium', 'Medium'),
-        ('high', 'High'),
-        ('urgent', 'Urgent')
-    ])
-    changed_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f"Priority change for {self.ticket.issue_summary} to {self.priority} at {self.changed_at}"
-    
-    class Meta:
-        verbose_name_plural = "Historico de Prioridade de Tickets"
-
-        ordering = ['-changed_at']
-        unique_together = ('ticket', 'changed_at')
+        verbose_name_plural = "Logs de Actividades das Tarefas"

@@ -7,7 +7,18 @@ from django.http import HttpResponseRedirect, Http404
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import JsonResponse
 
-from .models import Ticket, HelpTopic, TicketComment, TicketAttachment, Tasks, TaskComments
+from .models import (
+    # Tickets 
+    Ticket,
+    HelpTopic,
+    TicketComment,
+    TicketAttachment,
+    TicketActivityLog,
+    # Tasks
+    Tasks,
+    TaskComments,
+    TaskActivityLog
+)
 from .forms import TicketForm, HelpTopicForm, TicketCommentForm, TicketAttachmentForm, TasksForm, TaskCommentForm
 from users.models import Agents
 
@@ -34,26 +45,31 @@ def admin_page(request):
 def ticket_list(request):
     """ List all tickets """
     user_is_staff_member = Agents.objects.filter(user=request.user).values_list('privilege_level', flat=True)
-    # admin pode ver todos os tickets, enquanto os outros usuários podem ver apenas os tickets atribuídos a eles
-    if user_is_staff_member[0] == 'admin':
-        tickets = Ticket.objects.all()
+    # Verifica se o usuário é um membro do staff
+    if user_is_staff_member:
+        # Aqui verificamos se o usuários é um admin ou não.
+        # O admin pode ver todos os tickets, enquanto os outros usuários podem ver apenas os tickets atribuídos a eles
+        if user_is_staff_member[0] == 'admin':
+            tickets = Ticket.objects.all()
+        else:
+            tickets = Ticket.objects.filter(assigned_to=request.user.agent)
     else:
-        tickets = Ticket.objects.filter(assigned_to=request.user.agent)  # Assuming the user is logged in and has a related Ticket object
+        tickets = Ticket.objects.filter(user=request.user)
     # You might want to add pagination or filtering here
     return render(request, 'helpdesk/ticket_list.html', {'tickets': tickets})
 
 @login_required
 def create_new_ticket(request):
-    """ Create a new ticket """
-    logger = logging.getLogger(__name__)
-    
+    """ Create a new ticket """    
     if request.method == 'POST':
         form = TicketForm(request.POST)
         if form.is_valid():
             ticket = form.save(commit=False)
             ticket.user = request.user  # Assuming the user is logged in
             ticket.save()
-            logger.info(f'Ticket created: {ticket.issue_summary} by {request.user.username}')
+            # Records activity whenever a new ticket is created
+            ticket_activity_log = TicketActivityLog.objects.create(ticket=ticket.issue_summary, user=f'{request.user.first_name} {request.user.last_name}', info=f'Ticket created')
+            ticket_activity_log.save()
             # Here you would typically send an email notification or perform other actions
             return HttpResponseRedirect(reverse(
                 'ticket_detail',
@@ -66,8 +82,6 @@ def create_new_ticket(request):
 @login_required
 def check_ticket(request):
     """ Check the status of a ticket """
-    title = 'check_ticket'
-    
     if request.method == 'POST':
         user = request.user  # Assuming the user is logged in
         try:
@@ -85,7 +99,7 @@ def check_ticket(request):
             # Here you could render a template with an error message or redirect to an error page
             return HttpResponse('O Ticket não foi encontrado ou não pertence a esse usuário', status=404)
         # For now, we'll just redirect to a dummy ticket detail page
-    return render(request, 'helpdesk/check_ticket_form.html', {'title': title})
+    return render(request, 'helpdesk/check_ticket_form.html')
 
 @login_required
 def ticket_detail(request, ticket_id):
@@ -173,12 +187,25 @@ def assign_ticket(request, ticket_id):
         return render(request, 'helpdesk/assign_ticket_form.html', {'agents': Agents.objects.all(), 'ticket_id': ticket_id})
 
 @login_required
-def edit_ticket(request, ticket_id):
-    pass
-
-@login_required
+@user_passes_test(lambda user: user.agent.privilege_level == 'admin')
 def delete_ticket(request, ticket_id):
-    pass
+    ticket = Ticket.objects.get(pk=ticket_id)
+
+    if not ticket:
+        return HttpResponse('Task not found', status=404)
+
+    if request.method == 'POST':
+        ticket = Ticket.objects.get(id=ticket)
+        ticket.delete()
+        ticket_activity_log = TicketActivityLog.objects.create(
+            ticket=ticket.issue_summary,
+            user=f'{request.user.first_name} {request.user.last_name}',
+            info="Ticket Removido")
+        ticket_activity_log.save()
+        return HttpResponseRedirect(reverse('task_list'))  # Redirect to task list page after deleting
+    else:
+        return render(request, 'helpdesk/delete_ticket_form.html', {'ticket': ticket})
+
 
 @login_required
 @user_passes_test(lambda user: user.agent.privilege_level == 'admin')
@@ -215,8 +242,6 @@ def task_list(request):
 @user_passes_test(lambda user: user.agent.privilege_level == 'admin')
 def create_new_task(request):
     """ Create a new task """
-    logger = logging.getLogger(__name__)
-    
     if request.method == 'POST':
         form = TasksForm(request.POST)
         if form.is_valid():
@@ -224,7 +249,12 @@ def create_new_task(request):
             agent = Agents.objects.get(user=request.user)
             task.created_by = agent
             task.save()
-            logger.info(f'Task created: {task.task_name} by {request.user.username}')
+            task_Activity_log = TaskActivityLog.objects.create(
+                task=task.task_name,
+                user=f'{request.user.first_name} {request.user.last_name}',
+                info="Tarefa Criada"
+            )
+            task_Activity_log.save()
             # Here you would typically send an email notification or perform other actions
             return HttpResponseRedirect(reverse(
                 'task_detail',
@@ -264,16 +294,21 @@ def task_detail(request, task_id):
 @user_passes_test(lambda user: user.agent.privilege_level == 'admin')
 def delete_task(request, task_id):
     """ Delete a task """
-    # This function would typically handle deleting a task
-    # For now, we'll just return a dummy response
+    # This function would typically handle deleting a task    
     task = Tasks.objects.get(id=task_id)
     if not task:
         return HttpResponse('Task not found', status=404)
 
     if request.method == 'POST':
         task = Tasks.objects.get(id=task_id)
+
+        task_activity_log = TaskActivityLog.objects.create(
+            task=task.task_name,
+            user=f'{request.user.first_name} {request.user.last_name}',
+            info="Tarefa Removida")
+        task_activity_log.save()
         task.delete()
-        return HttpResponseRedirect(reverse('task_list'))  # Redirect to task list page after deleting
+        return redirect('task_list')  # Redirect to task list page after deleting
     else:
         return render(request, 'helpdesk/delete_task_form.html', {'task': task})
 
@@ -385,3 +420,22 @@ def change_task_status(request, task_id):
             return JsonResponse({'status': 'error', 'message': 'Invalid JSON data'}, status=400)
     else:
         return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=400)
+    
+# chart.js view
+def get_chart_data(request):
+    data = {
+        "labels": ["Janeiro", "Fevereiro", "Março", "Abril"],
+        "datasets": [{
+            "label": "Vendas",
+            "data": [100, 150, 130, 170],
+            "backgroundColor": ["#ff6384", "#36a2eb", "#ffce56", "#4bc0c0"]
+        }]
+    }
+
+    return JsonResponse(data)
+
+@login_required
+@user_passes_test()
+@user_passes_test(lambda user: user.agent.privilege_level == 'admin')
+def get_ticket_data(request):
+    pass

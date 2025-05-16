@@ -44,10 +44,13 @@
                     {% endif %}
                     
                     <hr>
+                    <!-- título da tarefa -->
                     <h4>Assunto: <span class="fst-italic fw-normal text-secondary">{{ task.task_name }}</span></h4>
-                    <h5 class="fst-italic text-secondary">Tarefa referente ao Ticekt: <span class="fw-normal">{{task.ticket.issue_summary}}</span></h5>
+                    <!-- título do ticket associado a tarefa -->
+                    <h5 class="fst-italic fs-6 text-secondary">Tarefa referente ao Ticekt: <span class="fw-normal">{{task.ticket.issue_summary}}</span></h5>
                     <br>
-                    <p>
+                    <!-- Descrição da tarefa -->
+                    <p class="fs-4">
                         {{task.description}}
                     </p>
                     {% if user.agent.privilege_level == 'admin' %}

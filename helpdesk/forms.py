@@ -99,7 +99,7 @@ class TasksForm(ModelForm):
             ),
             'ticket': forms.Select(attrs={'class': 'form-select', 'aria-label': 'Default select example'}),
             'priority': forms.Select(attrs={'class': 'form-select', 'aria-label': 'Default select example'}),
-            'assigned_to': forms.Select(attrs={'class': 'form-select', 'aria-label': 'Default select example'}),
+            'assigned_to': forms.SelectMultiple(attrs={'class': 'form-select', 'aria-label': 'Default select example'}),
             'due_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control w-50'}),
         }
 

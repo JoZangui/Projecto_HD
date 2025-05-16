@@ -23,8 +23,6 @@ urlpatterns = [
     path('help_topic/new/', views.create_help_topic, name='create_help_topic'),
     # atribuir ticket a um agente
     path('ticket/<int:ticket_id>/assign/', views.assign_ticket, name='assign_ticket'),
-    # editar ticket
-    path('ticket/<int:ticket_id>/edit/', views.edit_ticket, name='edit_ticket'),
     # deletar ticket
     path('ticket/<int:ticket_id>/delete/', views.delete_ticket, name='delete_ticket'),
     # task list
@@ -45,4 +43,7 @@ urlpatterns = [
     path('task/<int:task_id>/assign/', views.assign_task, name='assign_task'),
     # mudar o estado da tarefa
     path('task/<int:task_id>/change_status/', views.change_task_status, name='change_task_status'),
+
+    # ---------- Chart.js urls ----------
+    path('chart-data/', views.get_chart_data, name="chart-data"),
 ]
